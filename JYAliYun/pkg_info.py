@@ -4,7 +4,7 @@
 __author__ = 'ZhouHeng'
 
 name = "JYAliYun"
-version = "0.1.2"
+version = "0.1.3"
 url = "https://github.com/meisanggou/AliYun"
 license = "MIT"
 author = "meisanggou"
