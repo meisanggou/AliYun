@@ -9,21 +9,29 @@ except ImportError:
     from distutils.core import setup
 
 import sys
-from JYAliYun import pkg_info
 
 if sys.version_info <= (2, 7):
     sys.stderr.write("ERROR: jingyun aliyun python sdk requires Python Version 2.7 or above.\n")
     sys.stderr.write("Your Python Version is %s.%s.%s.\n" % sys.version_info[:3])
     sys.exit(1)
 
-setup(name=pkg_info.name,
-      version=pkg_info.version,
-      author=pkg_info.author,
+name = "JYAliYun"
+version = "0.1.4"
+url = "https://github.com/meisanggou/AliYun"
+license = "MIT"
+author = "meisanggou"
+short_description = "Aliyun Service Library"
+long_description = """JYAliYun provides interfaces to AliYun Service."""
+keywords = "JYAliYun"
+
+setup(name=name,
+      version=version,
+      author=author,
       author_email="zhouheng@gene.ac",
-      url=pkg_info.url,
+      url=url,
       packages=["JYAliYun", "JYAliYun/AliYunMNS", "JYAliYun/Tools"],
-      license=pkg_info.license,
-      description=pkg_info.short_description,
-      long_description=pkg_info.long_description,
-      keywords=pkg_info.keywords
+      license=license,
+      description=short_description,
+      long_description=long_description,
+      keywords=keywords
       )
