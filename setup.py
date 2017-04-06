@@ -23,6 +23,7 @@ author = "meisanggou"
 short_description = "Aliyun Service Library"
 long_description = """JYAliYun provides interfaces to AliYun Service."""
 keywords = "JYAliYun"
+install_requires = ["requests >= 2.10.0"]
 
 setup(name=name,
       version=version,
@@ -33,5 +34,6 @@ setup(name=name,
       license=license,
       description=short_description,
       long_description=long_description,
-      keywords=keywords
+      keywords=keywords,
+      install_requires=install_requires
       )
