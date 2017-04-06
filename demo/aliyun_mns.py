@@ -9,13 +9,13 @@ __author__ = 'ZhouHeng'
 """
 配置文件示例 /data/Web2/conf/mns.conf
 [Account]
-access_key_id: LTAIjqu3vAqEZ0H6
-access_key_secret: 25QTaQVEQPxMCkjJolgKuspzPk7pzw
+access_key_id: LTA***u**AqEZ0H6
+access_key_secret: 25*TaQ*EQPx*Ck*Jo*gKuspzPk7pzw
 
 [MNS]
-account_id: 1530531001163833
-region: beijing
-internal: false
+account_id: 1***53***1163833
+region: beijing  #  所属区域
+internal: false  #  是否为阿里内网
 """
 
 """
