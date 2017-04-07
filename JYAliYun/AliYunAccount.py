@@ -4,17 +4,7 @@
 import os
 import ConfigParser
 
-from JYAliYun.AliYunObject import ObjectManager
-
 __author__ = 'ZhouHeng'
-
-
-def assign_access_key(obj, conf_path, section="Account"):
-    assert isinstance(obj, ObjectManager)
-    config = ConfigParser.ConfigParser()
-    config.read(conf_path)
-    obj.access_key_id = config.get(section, "access_key_id")
-    obj.access_key_secret = config.get(section, "access_key_secret")
 
 
 class RAMAccount(object):
@@ -37,6 +27,7 @@ class RAMAccount(object):
         self.access_key_secret = config.get(section, "access_key_secret")
 
     def assign_access_key(self, obj):
-        assert isinstance(obj, ObjectManager)
-        obj.access_key_id = self.access_key_id
-        obj.access_key_secret = self.access_key_secret
+        if hasattr(obj, "access_key_id"):
+            obj.access_key_id = self.access_key_id
+        if hasattr(obj, "access_key_secret"):
+            obj.access_key_secret = self.access_key_secret

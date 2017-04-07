@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 # coding: utf-8
+import sys
 
+sys.path.append("..")
 from JYAliYun.AliYunAccount import RAMAccount
 from JYAliYun.AliYunMNS.AliMNSServer import MNSServerManager
 
@@ -23,7 +25,7 @@ internal: false  #  是否为阿里内网
 """
 conf_dir = "/data/Web2/conf"
 mns_account = RAMAccount(conf_dir=conf_dir, conf_name="mns.conf")
-mns_server = MNSServerManager(mns_account, conf_dir=conf_dir)
+mns_server = MNSServerManager(ram_account=mns_account, conf_dir=conf_dir)
 
 topic_name = "JYWaring"
 mns_topic = mns_server.get_topic(topic_name)

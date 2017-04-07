@@ -11,14 +11,17 @@ class ObjectManager(object):
         self.server_url = None
         self.access_key_id = ""
         self.access_key_secret = ""
+        self.ram_account = None
         if "ram_account" in kwargs:
             ram_account = kwargs["ram_account"]
             assert isinstance(ram_account, RAMAccount)
             ram_account.assign_access_key(self)
+            self.ram_account = ram_account
         if len(args) > 0:
             ram_account = args[0]
             if isinstance(ram_account, RAMAccount):
                 ram_account.assign_access_key(self)
+                self.ram_account = ram_account
 
     def set_server_url(self, server_url):
         self.server_url = server_url
@@ -31,5 +34,5 @@ class ObjectManager(object):
 
     def assign_access_key(self, obj):
         assert isinstance(obj, ObjectManager)
-        obj.access_key_id = self.access_key_id
-        obj.access_key_secret = self.access_key_secret
+        obj.set_access_key_secret(self.access_key_secret)
+        obj.set_access_key_id(self.access_key_id)
