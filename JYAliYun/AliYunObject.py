@@ -17,3 +17,8 @@ class ObjectManager(object):
 
     def set_access_key_secret(self, access_key_secret):
         self.access_key_secret = access_key_secret
+
+    def assign_access_key(self, obj):
+        assert isinstance(obj, ObjectManager)
+        obj.access_key_id = self.access_key_id
+        obj.access_key_secret = self.access_key_secret

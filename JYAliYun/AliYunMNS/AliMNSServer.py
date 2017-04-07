@@ -62,7 +62,6 @@ class MNSServerManager(ObjectManager):
 
     def get_topic(self, topic_name):
         mns_topic = MNSTopicsManager(topic_name)
+        self.assign_access_key(mns_topic)
         mns_topic.set_server_url(self.get_server_url())
-        mns_topic.set_access_key_id(self.access_key_id)
-        mns_topic.set_access_key_secret(self.access_key_secret)
         return mns_topic
