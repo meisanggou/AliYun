@@ -5,7 +5,6 @@ import os
 import ConfigParser
 
 from JYAliYun import AliYUN_DOMAIN_NAME
-from JYAliYun.AliYunAccount import RAMAccount
 from JYAliYun.AliYunObject import ObjectManager
 from JYAliYun.AliYunMNS.AliMNSTopics import MNSTopicsManager
 
@@ -21,9 +20,8 @@ class MNSServerManager(ObjectManager):
     internal: false
     """
 
-    def __init__(self, account, **kwargs):
-        assert isinstance(account, RAMAccount)
-        super(MNSServerManager, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(MNSServerManager, self).__init__(*args, **kwargs)
         conf_path = kwargs.pop("conf_path", None)
         conf_dir = kwargs.pop("conf_dir", None)
         if conf_path is not None:
@@ -38,7 +36,6 @@ class MNSServerManager(ObjectManager):
             self.account_id = kwargs["account_id"]
             self.region = kwargs["region"]
             self.internal = kwargs.pop("internal", False)
-        account.assign_access_key(self)
 
     def _load_conf(self, conf_path, section):
         config = ConfigParser.ConfigParser()

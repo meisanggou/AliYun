@@ -14,8 +14,8 @@ __author__ = 'ZhouHeng'
 class MNSTopicsManager(ObjectManager):
     version = "2015-06-06"
 
-    def __init__(self, topic_name):
-        super(MNSTopicsManager, self).__init__()
+    def __init__(self, topic_name, *args, **kwargs):
+        super(MNSTopicsManager, self).__init__(*args, **kwargs)
         self.topic_name = topic_name
         self.message_tag = None
         self.message_attributes = None
