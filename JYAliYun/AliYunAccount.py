@@ -13,6 +13,7 @@ class RAMAccount(object):
     [Account]
     access_key_id: LTAI***3vAqE****
     access_key_secret: 25QTaQVEQPx***jJolgKuspzPk7***
+    internal: false  #  是否为阿里内网
     """
 
     def __init__(self, conf_path=None, conf_dir=None, conf_name=None, section="Account"):
@@ -25,6 +26,10 @@ class RAMAccount(object):
         config.read(self.conf_path)
         self.access_key_id = config.get(section, "access_key_id")
         self.access_key_secret = config.get(section, "access_key_secret")
+        if config.has_option(section, "internal") is True:
+            self.is_internal = config.getboolean(section, "internal")
+        else:
+            self.is_internal = False
 
     def assign_access_key(self, obj):
         if hasattr(obj, "access_key_id"):

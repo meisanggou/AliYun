@@ -17,7 +17,6 @@ class MNSServerManager(ObjectManager):
     [MNS]
     account_id: 1530531001163833
     region: beijing
-    internal: false
     """
 
     def __init__(self, *args, **kwargs):
@@ -35,19 +34,17 @@ class MNSServerManager(ObjectManager):
         else:
             self.account_id = kwargs["account_id"]
             self.region = kwargs["region"]
-            self.internal = kwargs.pop("internal", False)
 
     def _load_conf(self, conf_path, section):
         config = ConfigParser.ConfigParser()
         config.read(conf_path)
         self.account_id = config.get(section, "account_id")
         self.region = config.get(section, "region")
-        self.internal = config.getboolean(section, "internal")
 
     def get_server_url(self):
         if self.server_url is not None:
             return self.server_url
-        if self.internal is True:
+        if self.is_internal is True:
             protocol = "http"
             region_ext = "-internal"
         else:

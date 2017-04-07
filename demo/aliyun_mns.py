@@ -1,8 +1,6 @@
 #! /usr/bin/env python
 # coding: utf-8
-import sys
 
-sys.path.append("..")
 from JYAliYun.AliYunAccount import RAMAccount
 from JYAliYun.AliYunMNS.AliMNSServer import MNSServerManager
 
@@ -13,11 +11,11 @@ __author__ = 'ZhouHeng'
 [Account]
 access_key_id: LTA***u**AqEZ0H6
 access_key_secret: 25*TaQ*EQPx*Ck*Jo*gKuspzPk7pzw
+internal: false  #  是否为阿里内网
 
 [MNS]
 account_id: 1***53***1163833
 region: beijing  #  所属区域
-internal: false  #  是否为阿里内网
 """
 
 """
