@@ -7,7 +7,7 @@ from JYAliYun.AliYunMNS.AliMNSServer import MNSServerManager
 __author__ = 'ZhouHeng'
 
 """
-配置文件示例 /data/Web2/conf/mns.conf
+配置文件示例 目录./config
 [Account]
 access_key_id: LTA***u**AqEZ0H6
 access_key_secret: 25*TaQ*EQPx*Ck*Jo*gKuspzPk7pzw
@@ -21,7 +21,7 @@ region: beijing  #  所属区域
 """
 发送 主题消息
 """
-conf_dir = "/data/Web2/conf"
+conf_dir = "conf"
 mns_account = RAMAccount(conf_dir=conf_dir, conf_name="mns.conf")
 mns_server = MNSServerManager(ram_account=mns_account, conf_dir=conf_dir)
 

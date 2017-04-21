@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 # coding: utf-8
 
+import os
+import ConfigParser
 import hmac
 import hashlib
 import base64
@@ -49,6 +51,62 @@ class ConvertObject(object):
         return doc.toxml("utf-8")
 
 
+class ConfigManager(object):
+    def __init__(self, **kwargs):
+        self.section = kwargs.pop("section", None)
+        if self.section is None:
+            self.section = kwargs.pop("default_section", None)
+
+        self.conf_path = kwargs.pop("conf_path", None)
+        if self.conf_path is None:
+            conf_dir = kwargs.pop("conf_dir", None)
+            if isinstance(conf_dir, str) or isinstance(conf_dir, unicode):
+                conf_name = kwargs.pop("conf_name", None)
+                default_conf_name = kwargs.pop("default_conf_name", None)
+                if conf_name is not None:
+                    self.conf_path = os.path.join(conf_dir, conf_name)
+                elif default_conf_name is not None:
+                    self.conf_path = os.path.join(conf_dir, default_conf_name)
+        if self.conf_path is None or self.section is None:
+            self.ready = False
+        else:
+            self.config = ConfigParser.ConfigParser()
+            self.config.read(self.conf_path)
+            self.ready = self.config.has_section(self.section)
+
+    def _get(self, option, option_type=None, default=None):
+        if self.ready is False:
+            return default
+        if self.config.has_option(self.section, option) is False:
+            return default
+        if option_type is None:
+            self.config.get(self.section, option)
+        if option_type == int:
+            return self.config.getint(self.section, option)
+        elif option_type == bool:
+            return self.config.getboolean(self.section, option)
+        elif option_type == float:
+            return self.config.getfloat(self.section, option)
+        return self.config.get(self.section, option)
+
+    def get(self, option, default=None):
+        return self._get(option, default=default)
+
+    def getboolean(self, option, default=None):
+        return self._get(option, bool, default=default)
+
+    def getint(self, option, default):
+        return self._get(option, int, default=default)
+
+    def getfloat(self, option, default):
+        return self._get(option, float, default=default)
+
+    def has_option(self, option):
+        if self.ready is False:
+            return False
+        return self.config.has_option(self.section, option)
+
+
 def ali_signature(access_key_secret, request_method, content_md5, content_type, request_time, x_headers, resource):
     if content_md5 is None:
         content_md5 = ""
@@ -65,3 +123,8 @@ def ali_signature(access_key_secret, request_method, content_md5, content_type, 
     h = hmac.new(access_key_secret, msg, hashlib.sha1)
     signature = base64.b64encode(h.digest())
     return signature
+
+
+if __name__ == "__main__":
+    config_man = ConfigManager(conf_dir="/data/Web2/conf", conf_name="mns.conf", section="Account")
+    print config_man.get("access_key_id")

@@ -2,8 +2,7 @@
 # coding: utf-8
 
 import base64
-import requests
-
+from JYAliYun.Tools import jy_requests
 from JYAliYun.Tools import ConvertObject
 from JYAliYun.AliYunMNS import construct_headers
 from JYAliYun.AliYunObject import ObjectManager
@@ -33,5 +32,5 @@ class MNSTopicsManager(ObjectManager):
 
         xml_data = ConvertObject.dict_to_xml("Message", data)
         url = self.server_url + resource
-        resp = requests.post(url, data=xml_data, headers=headers)
+        resp = jy_requests.post(url, data=xml_data, headers=headers)
         return resp

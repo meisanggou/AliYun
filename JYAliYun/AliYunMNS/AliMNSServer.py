@@ -1,9 +1,6 @@
 #! /usr/bin/env python
 # coding: utf-8
 
-import os
-import ConfigParser
-
 from JYAliYun import AliYUN_DOMAIN_NAME
 from JYAliYun.AliYunObject import ObjectManager
 from JYAliYun.AliYunMNS.AliMNSTopics import MNSTopicsManager
@@ -20,26 +17,14 @@ class MNSServerManager(ObjectManager):
     """
 
     def __init__(self, *args, **kwargs):
+        kwargs.update(default_section="MNS", default_conf_name="mns.conf")
         super(MNSServerManager, self).__init__(*args, **kwargs)
-        conf_path = kwargs.pop("conf_path", None)
-        conf_dir = kwargs.pop("conf_dir", None)
-        if conf_path is not None:
-            section = kwargs.pop("section", "MNS")
-            self._load_conf(conf_path, section)
-        elif conf_dir is not None:
-            conf_name = kwargs.pop("conf_name", "mns.conf")
-            conf_path = os.path.join(conf_dir, conf_name)
-            section = kwargs.pop("section", "MNS")
-            self._load_conf(conf_path, section)
-        else:
+        self.account_id = self.cfg.get("account_id")
+        if self.account_id is None:
             self.account_id = kwargs["account_id"]
+        self.region = self.cfg.get("region")
+        if self.region is None:
             self.region = kwargs["region"]
-
-    def _load_conf(self, conf_path, section):
-        config = ConfigParser.ConfigParser()
-        config.read(conf_path)
-        self.account_id = config.get(section, "account_id")
-        self.region = config.get(section, "region")
 
     def get_server_url(self):
         if self.server_url is not None:

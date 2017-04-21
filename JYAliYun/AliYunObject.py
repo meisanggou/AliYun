@@ -1,6 +1,9 @@
 #! /usr/bin/env python
 # coding: utf-8
 
+import os
+import logging
+from JYAliYun.Tools import ConfigManager
 from JYAliYun.AliYunAccount import RAMAccount
 
 __author__ = 'ZhouHeng'
@@ -8,6 +11,7 @@ __author__ = 'ZhouHeng'
 
 class ObjectManager(object):
     def __init__(self, *args, **kwargs):
+        self.cfg = ConfigManager(**kwargs)
         self.server_url = None
         self.access_key_id = ""
         self.access_key_secret = ""
@@ -22,8 +26,12 @@ class ObjectManager(object):
             if isinstance(ram_account, RAMAccount):
                 self.ram_account = ram_account
         if self.ram_account is not None:
-            self.ram_account.assign_access_key(self)
-            self.is_internal = self.ram_account.is_internal
+            self.ram_account.assign_account_info(self)
+
+        self.env = self.cfg.get("env", "")
+        self.logging_dir = self.cfg.get("logging_dir", "")
+        self.logging_name = self.cfg.get("logging_name", "")
+        # self.run_log = logging.FileHandler(os.path.join(self.logging_dir, self.logging_name))
 
     def set_server_url(self, server_url):
         self.server_url = server_url
@@ -37,7 +45,8 @@ class ObjectManager(object):
     def set_is_internal(self, is_internal):
         self.is_internal = is_internal
 
-    def assign_access_key(self, obj):
-        assert isinstance(obj, ObjectManager)
-        obj.set_access_key_secret(self.access_key_secret)
-        obj.set_access_key_id(self.access_key_id)
+    def set_env(self, env):
+        self.env = env
+
+    def log(self, message, level="INFO"):
+        pass
