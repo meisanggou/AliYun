@@ -36,4 +36,7 @@ class MNSTopicsManager(ObjectManager):
         xml_data = ConvertObject.dict_to_xml("Message", data)
         url = self.server_url + resource
         resp = jy_requests.post(url, data=xml_data, headers=headers)
+        if resp.status_code / 100 != 2:
+            self.waring_log("PUBLISH MESSAGE [%s] %s" % (message_tag, message_body),
+                            "RETURN %s %s" % (resp.status_code, resp.text))
         return resp

@@ -5,7 +5,7 @@ import os
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from JYAliYun import DATETIME_FORMAT, LOG_MSG_FORMAT, DEFAULT_LOGGER_NAME
-from JYAliYun.Tools import ConfigManager
+from JYAliYun.Tools import ConfigManager, ConvertObject
 from JYAliYun.AliYunAccount import RAMAccount
 
 __author__ = 'ZhouHeng'
@@ -69,11 +69,22 @@ class ObjectManager(object):
     def set_env(self, env):
         self.env = env
 
-    def error_info(self, message):
+    @staticmethod
+    def _handler_log_msg(message, *args):
+        message = ConvertObject.decode(message)
+        if len(args) >= 0:
+            for item in args:
+                message += "\n" + ConvertObject.decode(item)
+        return message
+
+    def error_info(self, message, *args):
+        message = self._handler_log_msg(message, *args)
         self.logger.error(message)
 
-    def waring_log(self, message):
+    def waring_log(self, message, *args):
+        message = self._handler_log_msg(message, *args)
         self.logger.warning(message)
 
-    def info_log(self, message):
+    def info_log(self, message, *args):
+        message = self._handler_log_msg(message, *args)
         self.logger.info(message)
