@@ -2,6 +2,7 @@
 # coding: utf-8
 
 import base64
+from JYAliYun import XML_CONTENT
 from JYAliYun.Tools import jy_requests
 from JYAliYun.Tools import ConvertObject
 from JYAliYun.AliYunMNS import construct_headers
@@ -27,7 +28,7 @@ class MNSTopicsManager(ObjectManager):
         if message_attributes is not None:
             data["MessageAttributes"] = message_attributes
         resource = "/topics/%s/messages" % self.topic_name
-        headers = construct_headers(self.access_key_id, self.access_key_secret, "POST", "text/xml;charset=utf-8",
+        headers = construct_headers(self.access_key_id, self.access_key_secret, "POST", XML_CONTENT,
                                     {"x-mns-version": self.version}, resource)
 
         xml_data = ConvertObject.dict_to_xml("Message", data)
