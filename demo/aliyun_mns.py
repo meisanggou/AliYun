@@ -27,6 +27,6 @@ mns_server = MNSServerManager(ram_account=mns_account, conf_dir=conf_dir)
 
 topic_name = "JYWaring"
 mns_topic = mns_server.get_topic(topic_name)
-message_body = "This is An Example Of Publish Message"
+message_body = "This is An Example Of Publish Message\n这是一个发送主题消息示例"
 message_tag = "TEST"
 mns_topic.publish_message(message_body, message_tag)

@@ -15,12 +15,14 @@ class MNSTopicsManager(ObjectManager):
     version = "2015-06-06"
 
     def __init__(self, topic_name, *args, **kwargs):
+        kwargs["logger_name"] = "MNS_TOPICS_MESSAGE"
         super(MNSTopicsManager, self).__init__(*args, **kwargs)
         self.topic_name = topic_name
         self.message_tag = None
         self.message_attributes = None
 
     def publish_message(self, message_body, message_tag=None, message_attributes=None):
+        self.info_log("PUBLISH MESSAGE [%s] %s" % (message_tag, message_body))
         message_body = base64.b64encode(ConvertObject.encode(message_body))
         data = {"MessageBody": message_body}
         if message_tag is not None:
