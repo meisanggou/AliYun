@@ -22,7 +22,7 @@ class MNSTopicsManager(ObjectManager):
         self.message_attributes = None
 
     def publish_message(self, message_body, message_tag=None, message_attributes=None):
-        self.info_log("PUBLISH MESSAGE [%s] %s" % (message_tag, message_body))
+        self.info_log(["PUBLISH MESSAGE [", message_tag, "]", message_body])
         message_body = base64.b64encode(ConvertObject.encode(message_body))
         data = {"MessageBody": message_body}
         if message_tag is not None:
@@ -37,6 +37,6 @@ class MNSTopicsManager(ObjectManager):
         url = self.server_url + resource
         resp = jy_requests.post(url, data=xml_data, headers=headers)
         if resp.status_code / 100 != 2:
-            self.waring_log("PUBLISH MESSAGE [%s] %s" % (message_tag, message_body),
+            self.waring_log(["PUBLISH MESSAGE [", message_tag, "]", message_body],
                             "RETURN %s %s" % (resp.status_code, resp.text))
         return resp

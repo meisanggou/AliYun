@@ -70,11 +70,20 @@ class ObjectManager(object):
         self.env = env
 
     @staticmethod
+    def _join_array_str(a, join_str):
+        r_a = ""
+        if isinstance(a, tuple) or isinstance(a, list):
+            for item in a:
+                r_a += ObjectManager._join_array_str(item, join_str) + join_str
+        else:
+            r_a + ConvertObject.decode(a)
+        return r_a
+
+    @staticmethod
     def _handler_log_msg(message, *args):
-        message = ConvertObject.decode(message)
+        message = ObjectManager._join_array_str(message, " ")
         if len(args) >= 0:
-            for item in args:
-                message += "\n" + ConvertObject.decode(item)
+            message += "\n" + ObjectManager._join_array_str(args, "\n")
         return message
 
     def error_info(self, message, *args):
