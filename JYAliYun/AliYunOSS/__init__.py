@@ -52,10 +52,9 @@ class OSSBucket(ObjectManager):
         return sign_url
 
     def head_object(self, oss_object):
-        if not oss_object.startswith("/"):
-            oss_object = "/" + oss_object
-        url = self.protocol + "://" + self.server_url + oss_object
-        headers = self.ali_headers("HEAD", "", "", "", self.get_resource(self.bucket_name, oss_object))
+        key = OSSBucket.format_key(oss_object)
+        url = self.protocol + "://" + self.server_url + "/" + key
+        headers = self.ali_headers("HEAD", "", "", "", self.get_resource(self.bucket_name, key))
         response = jy_requests.head(url, headers=headers)
         return response
 
