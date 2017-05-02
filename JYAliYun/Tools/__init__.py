@@ -116,10 +116,12 @@ def ali_headers(access_key_id, access_key_secret, request_method, content_md5, c
     x_headers_key = "x-%s" % product.lower()
     if isinstance(headers, dict):
         for k, v in dict(headers).items():
-            if v.startswith(x_headers_key):
+            if k.startswith(x_headers_key):
                 x_headers[k] = v
     else:
         headers = dict()
+    if content_type is not None and len(content_type) > 0:
+        headers["Content-Type"] = content_type
     signature = ali_signature(access_key_secret, request_method, content_md5, content_type, request_time, x_headers,
                               resource)
     headers["Authorization"] = product.upper() + " %s:%s" % (access_key_id, signature)

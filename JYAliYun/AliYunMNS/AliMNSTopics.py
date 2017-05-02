@@ -12,6 +12,7 @@ __author__ = 'ZhouHeng'
 
 
 class MNSTopicsManager(ObjectManager):
+    PRODUCT = "MNS"
     version = "2015-06-06"
 
     def __init__(self, topic_name, *args, **kwargs):
@@ -30,8 +31,9 @@ class MNSTopicsManager(ObjectManager):
         if message_attributes is not None:
             data["MessageAttributes"] = message_attributes
         resource = "/topics/%s/messages" % self.topic_name
-        headers = construct_headers(self.access_key_id, self.access_key_secret, "POST", XML_CONTENT,
-                                    {"x-mns-version": self.version}, resource)
+        headers = self.ali_headers("POST", "", XML_CONTENT, {"x-mns-version": self.version}, resource)
+        # headers = construct_headers(self.access_key_id, self.access_key_secret, "POST", XML_CONTENT,
+        #                             {"x-mns-version": self.version}, resource)
 
         xml_data = ConvertObject.dict_to_xml("Message", data)
         url = self.server_url + resource
