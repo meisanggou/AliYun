@@ -5,7 +5,6 @@ import base64
 from JYAliYun import XML_CONTENT
 from JYAliYun.Tools import jy_requests
 from JYAliYun.Tools import ConvertObject
-from JYAliYun.AliYunMNS import construct_headers
 from JYAliYun.AliYunObject import ObjectManager
 
 __author__ = 'ZhouHeng'
@@ -32,8 +31,6 @@ class MNSTopicsManager(ObjectManager):
             data["MessageAttributes"] = message_attributes
         resource = "/topics/%s/messages" % self.topic_name
         headers = self.ali_headers("POST", "", XML_CONTENT, {"x-mns-version": self.version}, resource)
-        # headers = construct_headers(self.access_key_id, self.access_key_secret, "POST", XML_CONTENT,
-        #                             {"x-mns-version": self.version}, resource)
 
         xml_data = ConvertObject.dict_to_xml("Message", data)
         url = self.server_url + resource
