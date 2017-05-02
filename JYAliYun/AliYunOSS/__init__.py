@@ -37,14 +37,18 @@ class OSSBucket(ObjectManager):
     def format_key(key):
         return key.lstrip("/")
 
+    def join_url(self, oss_object, server_url=None):
+        url = self.protocol + "://"
+        if server_url is not None:
+            url += server_url
+        else:
+            url += self.server_url
+        url += "/" + self.format_key(oss_object)
+        return url
+
     def sing_file_url(self, key, method="GET", expires=60, server_url=None):
         key = OSSBucket.format_key(key)
-        sign_url = self.protocol + "://"
-        if server_url is not None:
-            sign_url += server_url
-        else:
-            sign_url += self.server_url
-        sign_url += "/%s" % quote(key, '')
+        sign_url = self.join_url(quote(key, ''), server_url)
         expires = "%s" % int(time() + expires)
         resource_string = self.get_resource(self.bucket_name, key)
         signature = ali_signature(self.access_key_secret, method, "", "", expires, "", resource_string)
@@ -53,11 +57,14 @@ class OSSBucket(ObjectManager):
 
     def head_object(self, oss_object):
         key = OSSBucket.format_key(oss_object)
-        url = self.protocol + "://" + self.server_url + "/" + key
+        url = self.join_url(oss_object)
         headers = self.ali_headers("HEAD", "", "", "", self.get_resource(self.bucket_name, key))
         response = jy_requests.head(url, headers=headers)
         return response
 
-    def part_copy(self, oss_object, source_object, source_bucket=None):
+    def part_copy(self, oss_object, copy_range, source_object, source_bucket=None):
         if source_bucket is None:
             source_bucket = self.bucket_name
+        copy_source = OSSBucket.get_resource(source_bucket, source_object)
+        x_headers = {"x-oss-copy-source": copy_source, "x-oss-copy-source-range": copy_range}
+        headers = self.ali_headers("PUT", "", "", x_headers, OSSBucket.get_resource(self.bucket_name, oss_object))
