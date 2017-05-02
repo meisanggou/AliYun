@@ -34,4 +34,3 @@ head oss文件
 resp = bucket_man.head_object("dmsdata/editor/img/20173/zh_test_166_1490249799.png")
 print(resp.status_code)
 print(resp.headers)
-print(resp.text)

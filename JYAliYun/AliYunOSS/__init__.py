@@ -30,7 +30,7 @@ class OSSBucket(ObjectManager):
 
     @staticmethod
     def get_resource(bucket_name, key):
-        OSSBucket.format_key(key)
+        key = OSSBucket.format_key(key)
         return "/%s/%s" % (bucket_name, key)
 
     @staticmethod
