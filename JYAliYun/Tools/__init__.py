@@ -6,7 +6,9 @@ import ConfigParser
 import hmac
 import hashlib
 import base64
+from datetime import datetime
 import xml.dom.minidom
+from JYAliYun import GMT_FORMAT
 
 __author__ = 'ZhouHeng'
 
@@ -105,6 +107,24 @@ class ConfigManager(object):
         if self.ready is False:
             return False
         return self.config.has_option(self.section, option)
+
+
+def ali_headers(access_key_id, access_key_secret, request_method, content_md5, content_type, headers, resource,
+                product=""):
+    request_time = datetime.utcnow().strftime(GMT_FORMAT)
+    x_headers = dict()
+    x_headers_key = "x-%s" % product.lower()
+    if isinstance(headers, dict):
+        for k, v in dict(headers).items():
+            if v.startswith(x_headers_key):
+                x_headers[k] = v
+    else:
+        headers = dict()
+    signature = ali_signature(access_key_secret, request_method, content_md5, content_type, request_time, x_headers,
+                              resource)
+    headers["Authorization"] = product.upper() + " %s:%s" % (access_key_id, signature)
+    headers["Date"] = request_time
+    return headers
 
 
 def ali_signature(access_key_secret, request_method, content_md5, content_type, request_time, x_headers, resource):

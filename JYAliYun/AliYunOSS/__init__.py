@@ -11,6 +11,8 @@ __author__ = 'meisanggou'
 
 
 class OSSBucket(ObjectManager):
+    PRODUCT = "OSS"
+
     def __init__(self, *args, **kwargs):
         kwargs["default_section"] = "OSS"
         super(OSSBucket, self).__init__(*args, **kwargs)
@@ -28,6 +30,7 @@ class OSSBucket(ObjectManager):
 
     @staticmethod
     def get_resource(bucket_name, key):
+        OSSBucket.format_key(key)
         return "/%s/%s" % (bucket_name, key)
 
     @staticmethod
@@ -43,7 +46,7 @@ class OSSBucket(ObjectManager):
             sign_url += self.server_url
         sign_url += "/%s" % quote(key, '')
         expires = "%s" % int(time() + expires)
-        resource_string = "/%s/%s" % (self.bucket_name, key)
+        resource_string = self.get_resource(self.bucket_name, key)
         signature = ali_signature(self.access_key_secret, method, "", "", expires, "", resource_string)
         sign_url += "?OSSAccessKeyId=%s&Expires=%s&Signature=%s" % (self.access_key_id, expires, quote(signature, ""))
         return sign_url
@@ -51,11 +54,11 @@ class OSSBucket(ObjectManager):
     def head_object(self, oss_object):
         if not oss_object.startswith("/"):
             oss_object = "/" + oss_object
-        oss_resource = "/%s%s" % (self.bucket_name, oss_object)
+        url = self.protocol + "://" + self.server_url + oss_object
+        headers = self.ali_headers("HEAD", "", "", "", self.get_resource(self.bucket_name, oss_object))
+        response = jy_requests.head(url, headers=headers)
+        return response
 
-        url = "http://%s%s" % (self.oss_host, oss_object)
-        headers = ali_signature(self._access_id, self._access_secret, "HEAD", oss_resource)
-        response = jy_requests.head(url)
-        if response.status_code == 200:
-            return True, response.headers
-        return False, response.status_code
+    def part_copy(self, oss_object, source_object, source_bucket=None):
+        if source_bucket is None:
+            source_bucket = self.bucket_name

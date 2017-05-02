@@ -10,6 +10,10 @@ def request(method, url, **kwargs):
     return requests.request(method, url, **kwargs)
 
 
+def head(url, **kwargs):
+    return request("HEAD", url, **kwargs)
+
+
 def get(url, params=None, **kwargs):
     return request("GET", url, params=params, **kwargs)
 

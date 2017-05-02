@@ -5,7 +5,7 @@ import os
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from JYAliYun import DATETIME_FORMAT, LOG_MSG_FORMAT, DEFAULT_LOGGER_NAME
-from JYAliYun.Tools import ConfigManager, ConvertObject
+from JYAliYun.Tools import ConfigManager, ConvertObject, ali_headers
 from JYAliYun.AliYunAccount import RAMAccount
 
 __author__ = 'ZhouHeng'
@@ -15,6 +15,8 @@ __author__ = 'ZhouHeng'
 
 
 class ObjectManager(object):
+    PRODUCT = ""
+
     def __init__(self, *args, **kwargs):
         self.cfg = ConfigManager(**kwargs)
         self.server_url = None
@@ -97,3 +99,7 @@ class ObjectManager(object):
     def info_log(self, message, *args):
         message = self._handler_log_msg(message, *args)
         self.logger.info(message)
+
+    def ali_headers(self, request_method, content_md5, content_type, headers, resource):
+        return ali_headers(self.access_key_id, self.access_key_secret, request_method, content_md5, content_type,
+                           headers, resource, self.PRODUCT)

@@ -26,3 +26,12 @@ conf_dir = "conf"
 oss_account = RAMAccount(conf_dir=conf_dir, conf_name="oss.conf")
 bucket_man = OSSBucket(ram_account=oss_account, conf_dir=conf_dir, conf_name="oss.conf")
 print bucket_man.sing_file_url("dmsdata/editor/img/20173/zh_test_166_1490249799.png", server_url="file.gene.ac")
+
+"""
+head oss文件
+"""
+
+resp = bucket_man.head_object("dmsdata/editor/img/20173/zh_test_166_1490249799.png")
+print(resp.status_code)
+print(resp.headers)
+print(resp.text)
