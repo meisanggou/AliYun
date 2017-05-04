@@ -11,6 +11,33 @@ from JYAliYun.Tools import ali_signature, jy_requests
 __author__ = 'meisanggou'
 
 
+class OssObject(object):
+    @staticmethod
+    def format_key(key):
+        if not key.startswith("/"):
+            return "/" + key
+        return key
+
+    @staticmethod
+    def get_resource(oss_object, sub_resource=None):
+        if isinstance(sub_resource, dict):
+            sub_rs = []
+            for key in sorted(sub_resource.keys()):
+                if sub_resource[key] is None:
+                    sub_rs.append(key)
+                else:
+                    sub_rs.append("%s=%s" % (key, sub_resource[key]))
+            if len(sub_rs) > 0:
+                oss_object += "?" + "&".join(sub_rs)
+        return oss_object
+
+    def __init__(self, bucket_name, key, sub_key=None):
+        self.bucket_name = bucket_name
+        self.key = self.format_key(key)
+        self.resource = self.get_resource(self.key, sub_key)
+        self.full_resource = "/%s%s" % (self.bucket_name, self.resource)
+
+
 class OSSBucket(ObjectManager):
     PRODUCT = "OSS"
 
@@ -30,9 +57,18 @@ class OSSBucket(ObjectManager):
         self.server_url = "%s.%s" % (self.bucket_name, self.endpoint)
 
     @staticmethod
-    def get_resource(bucket_name, key):
-        key = OSSBucket.format_key(key)
-        return "/%s/%s" % (bucket_name, key)
+    def get_resource(bucket_name, oss_object, sub_resource=None):
+        oss_object = OSSBucket.format_key(oss_object)
+        if isinstance(sub_resource, dict):
+            sub_rs = []
+            for key in sorted(sub_resource.keys()):
+                if sub_resource[key] is None:
+                    sub_rs.append(key)
+                else:
+                    sub_rs.append("%s=%s" % (key, sub_resource[key]))
+            if len(sub_rs) > 0:
+                oss_object += "?" + "&".join(sub_rs)
+        return "/%s/%s" % (bucket_name, oss_object)
 
     @staticmethod
     def format_key(key):
@@ -44,7 +80,7 @@ class OSSBucket(ObjectManager):
             url += server_url
         else:
             url += self.server_url
-        url += "/" + self.format_key(oss_object)
+        url += oss_object
         return url
 
     def sing_file_url(self, key, method="GET", expires=60, server_url=None):
@@ -56,17 +92,17 @@ class OSSBucket(ObjectManager):
         sign_url += "?OSSAccessKeyId=%s&Expires=%s&Signature=%s" % (self.access_key_id, expires, quote(signature, ""))
         return sign_url
 
-    def head_object(self, oss_object):
-        key = OSSBucket.format_key(oss_object)
-        url = self.join_url(oss_object)
-        headers = self.ali_headers("HEAD", "", "", "", self.get_resource(self.bucket_name, key))
+    def head_object(self, object_key):
+        oss_object = OssObject(self.bucket_name, object_key)
+        url = self.join_url(oss_object.resource)
+        headers = self.ali_headers("HEAD", oss_object.full_resource)
         response = jy_requests.head(url, headers=headers)
         return response
 
-    def init_mul_upload(self, oss_object):
-        headers = self.ali_headers("POST", "", "", None, OSSBucket.get_resource(self.bucket_name, oss_object),
-                                   sub_resource={"uploads": None})
-        url = self.join_url(oss_object) + "?uploads"
+    def init_mul_upload(self, object_key):
+        oss_object = OssObject(self.bucket_name, object_key, {"uploads": None})
+        headers = self.ali_headers("POST", oss_object.full_resource)
+        url = self.join_url(oss_object.resource)
         resp = jy_requests.post(url, headers=headers)
         r_d = dict(status_code=resp.status_code, text=resp.text, headers=resp.headers)
         if resp.status_code / 100 != 2:
@@ -83,10 +119,38 @@ class OSSBucket(ObjectManager):
         x_headers = {"x-oss-copy-source": copy_source, "x-oss-copy-source-range": copy_range}
         del x_headers["x-oss-copy-source-range"]
         sub_resource = dict(partNumber=part_num, uploadId=upload_id)
-        headers = self.ali_headers("PUT", "", "", x_headers, OSSBucket.get_resource(self.bucket_name, oss_object),
-                                   sub_resource=sub_resource)
+        headers = self.ali_headers("PUT", OSSBucket.get_resource(self.bucket_name, oss_object), headers=x_headers)
         url = self.join_url(oss_object)
-        print(url)
-        print(sub_resource)
         resp = jy_requests.put(url, params=sub_resource, headers=headers)
         return resp
+
+    def list_object(self, delimiter=None, marker=None, max_keys=100, prefix=None):
+        sub_resource = dict()
+        if delimiter is not None:
+            sub_resource["delimiter"] = delimiter
+        if marker is not None:
+            sub_resource["marker"] = marker
+        # if isinstance(max_keys, int):
+        #     sub_resource["max-keys"] = max_keys
+        if prefix is not None:
+            sub_resource["prefix"] = prefix
+        oss_object = OssObject(self.bucket_name, "", sub_resource)
+        headers = self.ali_headers("GET", oss_object.full_resource, print_sign_msg=True)
+        url = self.join_url("")
+        resp = jy_requests.get(url, params=sub_resource, headers=headers)
+        res_ele = etree.fromstring(resp.text.encode("utf-8"))
+        object_list = []
+        for item_content in res_ele.findall("Contents"):
+            object_meta = {"key": item_content.find("Key").text, "size": long(item_content.find("Size").text)}
+            object_list.append(object_meta)
+        for item_content in res_ele.findall("CommonPrefixes"):
+            object_meta = {"key": item_content.find("Prefix").text, "size": 0}
+            object_list.append(object_meta)
+        is_truncated = res_ele.find("IsTruncated").text
+        # if is_truncated == "true":
+        #     sub_resource["marker"] = res_ele.find("NextMarker").text
+        #     result, info = self.list_object(**sub_resource)
+        #     if result is False:
+        #         return False, info
+        # object_list.extend(info)
+        return True, object_list

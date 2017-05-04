@@ -25,7 +25,7 @@ region: beijing #  不存在时默认为beijing
 conf_dir = "conf"
 oss_account = RAMAccount(conf_dir=conf_dir, conf_name="oss.conf")
 bucket_man = OSSBucket(ram_account=oss_account, conf_dir=conf_dir, conf_name="oss.conf")
-print bucket_man.sing_file_url("dmsdata/editor/img/20173/zh_test_166_1490249799.png", server_url="file.gene.ac")
+print bucket_man.sing_file_url("zh_t045/readme.txt")
 
 """
 head oss文件
@@ -40,13 +40,21 @@ InitiateMultipartUpload
 """
 resp = bucket_man.init_mul_upload("zh_t045/C16121640570-SR16043-WES_S1_L001_R1_001.fastq.gz")
 assert resp["status_code"] == 200
-print(resp["data"])
+# print(resp["data"])
 upload_id = resp["data"]["upload_id"]
 key = resp["data"]["key"]
 
 """
 UploadPartCopy
 """
-print(upload_id)
-resp = bucket_man.part_copy(upload_id, 1, key, copy_range="0-1024000", source_object=head_object)
-print(resp.text)
+# print(upload_id)
+# resp = bucket_man.part_copy(upload_id, 1, key, copy_range="0-1024000", source_object=head_object)
+# print(resp.text)
+
+
+"""
+Get Bucket (List Object)
+"""
+
+resp = bucket_man.list_object()
+print(resp)

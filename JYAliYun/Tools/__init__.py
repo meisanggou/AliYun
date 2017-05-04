@@ -144,18 +144,9 @@ def ali_signature(access_key_secret, request_method, content_md5, content_type, 
         elif type(x_headers) == dict:
             for key in sorted(x_headers.keys()):
                 x_headers_s += key.lower() + ":" + x_headers[key] + "\n"
-    if "sub_resource" in kwargs:
-        sub_resource = kwargs["sub_resource"]
-        if isinstance(sub_resource, dict):
-            sub_rs = []
-            for key in sorted(sub_resource.keys()):
-                if sub_resource[key] is None:
-                    sub_rs.append(key)
-                else:
-                    sub_rs.append("%s=%s" % (key, sub_resource[key]))
-            if len(sub_rs) > 0:
-                resource += "?" + "&".join(sub_rs)
     msg = "%s\n%s\n%s\n%s\n%s%s" % (request_method, content_md5, content_type, request_time, x_headers_s, resource)
+    if "print_sign_msg" in kwargs:
+        print(msg)
     h = hmac.new(access_key_secret, msg, hashlib.sha1)
     signature = base64.b64encode(h.digest())
     return signature

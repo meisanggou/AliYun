@@ -30,7 +30,7 @@ class MNSTopicsManager(ObjectManager):
         if message_attributes is not None:
             data["MessageAttributes"] = message_attributes
         resource = "/topics/%s/messages" % self.topic_name
-        headers = self.ali_headers("POST", "", XML_CONTENT, {"x-mns-version": self.version}, resource)
+        headers = self.ali_headers("POST", resource, headers={"x-mns-version": self.version}, content_type=XML_CONTENT)
 
         xml_data = ConvertObject.dict_to_xml("Message", data)
         url = self.server_url + resource
