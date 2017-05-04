@@ -56,5 +56,6 @@ UploadPartCopy
 Get Bucket (List Object)
 """
 
-resp = bucket_man.list_object()
-print(resp)
+resp = bucket_man.list_object(max_keys=100, prefix="admin/MJYLWXZ/", delimiter="/")
+assert resp["status_code"] == 200
+print resp["data"]["keys"]

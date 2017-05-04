@@ -27,7 +27,7 @@ class OssObject(object):
                     sub_rs.append(key)
                 else:
                     sub_rs.append("%s=%s" % (key, sub_resource[key]))
-            if len(sub_rs) > 0:
+            if len(sub_rs) > 0 and len(oss_object) > 1:
                 oss_object += "?" + "&".join(sub_rs)
         return oss_object
 
@@ -130,14 +130,17 @@ class OSSBucket(ObjectManager):
             sub_resource["delimiter"] = delimiter
         if marker is not None:
             sub_resource["marker"] = marker
-        # if isinstance(max_keys, int):
-        #     sub_resource["max-keys"] = max_keys
+        if isinstance(max_keys, int):
+            sub_resource["max-keys"] = max_keys
         if prefix is not None:
             sub_resource["prefix"] = prefix
         oss_object = OssObject(self.bucket_name, "", sub_resource)
-        headers = self.ali_headers("GET", oss_object.full_resource, print_sign_msg=True)
-        url = self.join_url("")
+        headers = self.ali_headers("GET", oss_object.full_resource)
+        url = self.join_url(oss_object.resource)
         resp = jy_requests.get(url, params=sub_resource, headers=headers)
+        r_d = dict(status_code=resp.status_code, text=resp.text, headers=resp.headers)
+        if resp.status_code / 100 != 2:
+            return r_d
         res_ele = etree.fromstring(resp.text.encode("utf-8"))
         object_list = []
         for item_content in res_ele.findall("Contents"):
@@ -147,10 +150,8 @@ class OSSBucket(ObjectManager):
             object_meta = {"key": item_content.find("Prefix").text, "size": 0}
             object_list.append(object_meta)
         is_truncated = res_ele.find("IsTruncated").text
-        # if is_truncated == "true":
-        #     sub_resource["marker"] = res_ele.find("NextMarker").text
-        #     result, info = self.list_object(**sub_resource)
-        #     if result is False:
-        #         return False, info
-        # object_list.extend(info)
-        return True, object_list
+        r_d["data"] = dict(is_truncated=is_truncated, keys=object_list)
+        if is_truncated == "true":
+            next_marker = res_ele.find("NextMarker").text
+            r_d["data"].update(next_marker=next_marker)
+        return r_d
