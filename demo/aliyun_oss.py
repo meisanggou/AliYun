@@ -30,7 +30,23 @@ print bucket_man.sing_file_url("dmsdata/editor/img/20173/zh_test_166_1490249799.
 """
 head oss文件
 """
-
-resp = bucket_man.head_object("dmsdata/editor/img/20173/zh_test_166_1490249799.png")
+head_object = "admin/SR16043_L001/C16121640570-YH112-SR16043-WES_S1_L001_R1_001.fastq.gz"
+resp = bucket_man.head_object(head_object)
 print(resp.status_code)
 print(resp.headers)
+
+"""
+InitiateMultipartUpload
+"""
+resp = bucket_man.init_mul_upload("zh_t045/C16121640570-SR16043-WES_S1_L001_R1_001.fastq.gz")
+assert resp["status_code"] == 200
+print(resp["data"])
+upload_id = resp["data"]["upload_id"]
+key = resp["data"]["key"]
+
+"""
+UploadPartCopy
+"""
+print(upload_id)
+resp = bucket_man.part_copy(upload_id, 1, key, copy_range="0-1024000", source_object=head_object)
+print(resp.text)

@@ -2,6 +2,7 @@
 # coding: utf-8
 
 from time import time
+from lxml import etree
 from urllib import quote
 from JYAliYun import AliYUN_DOMAIN_NAME
 from JYAliYun.AliYunObject import ObjectManager
@@ -62,12 +63,30 @@ class OSSBucket(ObjectManager):
         response = jy_requests.head(url, headers=headers)
         return response
 
+    def init_mul_upload(self, oss_object):
+        headers = self.ali_headers("POST", "", "", None, OSSBucket.get_resource(self.bucket_name, oss_object),
+                                   sub_resource={"uploads": None})
+        url = self.join_url(oss_object) + "?uploads"
+        resp = jy_requests.post(url, headers=headers)
+        r_d = dict(status_code=resp.status_code, text=resp.text, headers=resp.headers)
+        if resp.status_code / 100 != 2:
+            return r_d
+        res_ele = etree.fromstring(resp.text.encode("utf-8"))
+        r_d["data"] = dict(bucket_name=res_ele.find("Bucket").text, key=res_ele.find("Key").text,
+                           upload_id=res_ele.find("UploadId").text)
+        return r_d
+
     def part_copy(self, upload_id, part_num, oss_object, copy_range, source_object, source_bucket=None):
         if source_bucket is None:
             source_bucket = self.bucket_name
         copy_source = OSSBucket.get_resource(source_bucket, source_object)
         x_headers = {"x-oss-copy-source": copy_source, "x-oss-copy-source-range": copy_range}
-        headers = self.ali_headers("PUT", "", "", x_headers, OSSBucket.get_resource(self.bucket_name, oss_object))
-        url = self.join_url(oss_object) + "?partNumber=%s&UploadId=%s" % (part_num, upload_id)
-        resp = jy_requests.put(url, headers=headers)
+        del x_headers["x-oss-copy-source-range"]
+        sub_resource = dict(partNumber=part_num, uploadId=upload_id)
+        headers = self.ali_headers("PUT", "", "", x_headers, OSSBucket.get_resource(self.bucket_name, oss_object),
+                                   sub_resource=sub_resource)
+        url = self.join_url(oss_object)
+        print(url)
+        print(sub_resource)
+        resp = jy_requests.put(url, params=sub_resource, headers=headers)
         return resp

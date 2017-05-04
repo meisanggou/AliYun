@@ -100,6 +100,6 @@ class ObjectManager(object):
         message = self._handler_log_msg(message, *args)
         self.logger.info(message)
 
-    def ali_headers(self, request_method, content_md5, content_type, headers, resource):
+    def ali_headers(self, request_method, content_md5, content_type, headers, resource, **kwargs):
         return ali_headers(self.access_key_id, self.access_key_secret, request_method, content_md5, content_type,
-                           headers, resource, self.PRODUCT)
+                           headers, resource, product=self.PRODUCT, **kwargs)
