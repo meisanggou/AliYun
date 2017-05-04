@@ -62,9 +62,12 @@ class OSSBucket(ObjectManager):
         response = jy_requests.head(url, headers=headers)
         return response
 
-    def part_copy(self, oss_object, copy_range, source_object, source_bucket=None):
+    def part_copy(self, upload_id, part_num, oss_object, copy_range, source_object, source_bucket=None):
         if source_bucket is None:
             source_bucket = self.bucket_name
         copy_source = OSSBucket.get_resource(source_bucket, source_object)
         x_headers = {"x-oss-copy-source": copy_source, "x-oss-copy-source-range": copy_range}
         headers = self.ali_headers("PUT", "", "", x_headers, OSSBucket.get_resource(self.bucket_name, oss_object))
+        url = self.join_url(oss_object) + "?partNumber=%s&UploadId=%s" % (part_num, upload_id)
+        resp = jy_requests.put(url, headers=headers)
+        return resp

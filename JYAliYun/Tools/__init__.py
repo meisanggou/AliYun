@@ -110,9 +110,10 @@ class ConfigManager(object):
 
 
 def ali_headers(access_key_id, access_key_secret, request_method, content_md5, content_type, headers, resource,
-                product=""):
+                **kwargs):
     request_time = datetime.utcnow().strftime(GMT_FORMAT)
     x_headers = dict()
+    product = kwargs.pop("product", "")
     x_headers_key = "x-%s" % product.lower()
     if isinstance(headers, dict):
         for k, v in dict(headers).items():
@@ -123,13 +124,15 @@ def ali_headers(access_key_id, access_key_secret, request_method, content_md5, c
     if content_type is not None and len(content_type) > 0:
         headers["Content-Type"] = content_type
     signature = ali_signature(access_key_secret, request_method, content_md5, content_type, request_time, x_headers,
-                              resource)
+                              resource, **kwargs)
+
     headers["Authorization"] = product.upper() + " %s:%s" % (access_key_id, signature)
     headers["Date"] = request_time
     return headers
 
 
-def ali_signature(access_key_secret, request_method, content_md5, content_type, request_time, x_headers, resource):
+def ali_signature(access_key_secret, request_method, content_md5, content_type, request_time, x_headers, resource,
+                  **kwargs):
     if content_md5 is None:
         content_md5 = ""
     if content_type is None:
@@ -141,6 +144,14 @@ def ali_signature(access_key_secret, request_method, content_md5, content_type, 
         elif type(x_headers) == dict:
             for key in sorted(x_headers.keys()):
                 x_headers_s += key.lower() + ":" + x_headers[key] + "\n"
+    if "sub_resource" in kwargs:
+        sub_resource = kwargs["sub_resource"]
+        if isinstance(sub_resource, dict):
+            sub_rs = []
+            for key in sorted(sub_resource.keys()):
+                sub_rs.append("%s=%s" % (key, sub_resource[key]))
+            if len(sub_rs) > 0:
+                resource + "?" + "&".join(sub_resource)
     msg = "%s\n%s\n%s\n%s\n%s%s" % (request_method, content_md5, content_type, request_time, x_headers_s, resource)
     h = hmac.new(access_key_secret, msg, hashlib.sha1)
     signature = base64.b64encode(h.digest())
