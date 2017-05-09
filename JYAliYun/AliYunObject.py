@@ -78,7 +78,7 @@ class ObjectManager(object):
             for item in a:
                 r_a += ObjectManager._join_array_str(item, join_str) + join_str
         else:
-            r_a + ConvertObject.decode(a)
+            r_a += ConvertObject.decode(a)
         return r_a
 
     @staticmethod
