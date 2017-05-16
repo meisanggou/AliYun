@@ -6,8 +6,33 @@ import requests
 __author__ = 'meisanggou'
 
 
+class JYResponse(object):
+    def __init__(self):
+        self.status_code = 0
+        self.text = ""
+        self.headers = dict()
+        self.error = ""
+
+    def update(self, resp):
+        self.status_code = resp.status_code
+        self.text = resp.text
+        self.headers = resp.headers
+
+
 def request(method, url, **kwargs):
-    return requests.request(method, url, **kwargs)
+    no_exception = kwargs.pop("no_exception", False)
+    r_d = JYResponse()
+    if no_exception is True:
+        try:
+            resp = requests.request(method, url, **kwargs)
+            r_d.update(resp)
+            return r_d
+        except requests.RequestException as e:
+            r_d.error = e
+            return r_d
+    resp = requests.request(method, url, **kwargs)
+    r_d.update(resp)
+    return r_d
 
 
 def head(url, **kwargs):

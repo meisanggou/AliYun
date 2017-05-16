@@ -103,11 +103,10 @@ class OSSBucket(ObjectManager):
         oss_object = OssObject(self.bucket_name, object_key, {"uploads": None})
         headers = self.ali_headers("POST", oss_object.full_resource)
         url = self.join_url(oss_object.resource)
-        resp = jy_requests.post(url, headers=headers)
-        r_d = dict(status_code=resp.status_code, text=resp.text, headers=resp.headers)
-        if resp.status_code / 100 != 2:
+        r_d = jy_requests.post(url, headers=headers)
+        if r_d.status_code / 100 != 2:
             return r_d
-        res_ele = etree.fromstring(resp.text.encode("utf-8"))
+        res_ele = etree.fromstring(r_d.text.encode("utf-8"))
         r_d["data"] = dict(bucket_name=res_ele.find("Bucket").text, key=res_ele.find("Key").text,
                            upload_id=res_ele.find("UploadId").text)
         return r_d
@@ -123,8 +122,8 @@ class OSSBucket(ObjectManager):
         oss_object = OssObject(self.bucket_name, object_key, sub_resource)
         headers = self.ali_headers("PUT", oss_object.full_resource, headers=x_headers)
         url = self.join_url(oss_object.resource)
-        resp = jy_requests.put(url, params=sub_resource, headers=headers)
-        return resp
+        r_d = jy_requests.put(url, params=sub_resource, headers=headers)
+        return r_d
 
     def list_object(self, delimiter=None, marker=None, max_keys=100, prefix=None):
         sub_resource = dict()
@@ -139,11 +138,10 @@ class OSSBucket(ObjectManager):
         oss_object = OssObject(self.bucket_name, "", sub_resource)
         headers = self.ali_headers("GET", oss_object.full_resource)
         url = self.join_url(oss_object.resource)
-        resp = jy_requests.get(url, params=sub_resource, headers=headers)
-        r_d = dict(status_code=resp.status_code, text=resp.text, headers=resp.headers)
-        if resp.status_code / 100 != 2:
+        r_d = jy_requests.get(url, params=sub_resource, headers=headers)
+        if r_d.status_code / 100 != 2:
             return r_d
-        res_ele = etree.fromstring(resp.text.encode("utf-8"))
+        res_ele = etree.fromstring(r_d.text.encode("utf-8"))
         object_list = []
         for item_content in res_ele.findall("Contents"):
             object_meta = {"key": item_content.find("Key").text, "size": long(item_content.find("Size").text)}
