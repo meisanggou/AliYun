@@ -18,16 +18,24 @@ class ObjectManager(object):
     PRODUCT = ""
 
     def __init__(self, *args, **kwargs):
-        self.cfg = ConfigManager(**kwargs)
+        if "cfg" in kwargs:
+            if isinstance(kwargs["cfg"], ConfigManager):
+                self.cfg = kwargs["cfg"]
+        else:
+            self.cfg = ConfigManager(**kwargs)
         self.server_url = None
         self.access_key_id = ""
         self.access_key_secret = ""
         self.is_internal = False
         self.ram_account = None
+        self.disabled_log = False
         if "ram_account" in kwargs:
             ram_account = kwargs["ram_account"]
             assert isinstance(ram_account, RAMAccount)
             self.ram_account = ram_account
+        if "disabled_log" in kwargs:
+            self.disabled_log = kwargs["disabled_log"]
+            assert isinstance(self.disabled_log, bool)
         if len(args) > 0:
             ram_account = args[0]
             if isinstance(ram_account, RAMAccount):
@@ -43,6 +51,8 @@ class ObjectManager(object):
         self.init_logging()
 
     def init_logging(self):
+        if self.disabled_log is True:
+            return
         logging_dir = self.cfg.get("logging_dir", "")
         logging_name = self.cfg.get("logging_name", self.logger_name.lower())
         filename = os.path.join(logging_dir, logging_name)

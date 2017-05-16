@@ -17,7 +17,7 @@ class MNSServerManager(ObjectManager):
     """
 
     def __init__(self, *args, **kwargs):
-        kwargs.update(default_section="MNS", default_conf_name="mns.conf")
+        kwargs.update(default_section="MNS", default_conf_name="mns.conf", disabled_log=True)
         super(MNSServerManager, self).__init__(*args, **kwargs)
         self.account_id = self.cfg.get("account_id")
         if self.account_id is None:
@@ -40,6 +40,6 @@ class MNSServerManager(ObjectManager):
         return self.server_url
 
     def get_topic(self, topic_name):
-        mns_topic = MNSTopicsManager(topic_name, ram_account=self.ram_account)
+        mns_topic = MNSTopicsManager(topic_name, ram_account=self.ram_account, cfg=self.cfg)
         mns_topic.set_server_url(self.get_server_url())
         return mns_topic
