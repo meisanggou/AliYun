@@ -150,8 +150,8 @@ class OSSBucket(ObjectManager):
             object_meta = {"key": item_content.find("Prefix").text, "size": 0}
             object_list.append(object_meta)
         is_truncated = res_ele.find("IsTruncated").text
-        r_d["data"] = dict(is_truncated=is_truncated, keys=object_list)
+        r_d.data = dict(is_truncated=is_truncated, keys=object_list)
         if is_truncated == "true":
             next_marker = res_ele.find("NextMarker").text
-            r_d["data"].update(next_marker=next_marker)
+            r_d.data.update(next_marker=next_marker)
         return r_d

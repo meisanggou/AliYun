@@ -12,6 +12,7 @@ class JYResponse(object):
         self.text = ""
         self.headers = dict()
         self.error = ""
+        self.data = None
 
     def update(self, resp):
         self.status_code = resp.status_code
