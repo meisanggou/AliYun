@@ -42,7 +42,8 @@ class OSSBucket(ObjectManager):
     PRODUCT = "OSS"
 
     def __init__(self, *args, **kwargs):
-        kwargs["default_section"] = "OSS"
+        if "default_section" not in kwargs:
+            kwargs["default_section"] = "OSS"
         super(OSSBucket, self).__init__(*args, **kwargs)
         if self.cfg.get("bucket") is not None:
             self.bucket_name = self.cfg.get('bucket')
@@ -80,10 +81,12 @@ class OSSBucket(ObjectManager):
             url += server_url
         else:
             url += self.server_url
+        if not oss_object.startswith("/"):
+            url += "/"
         url += oss_object
         return url
 
-    def sing_file_url(self, key, method="GET", expires=60, server_url=None):
+    def sign_file_url(self, key, method="GET", expires=60, server_url=None):
         key = OSSBucket.format_key(key)
         sign_url = self.join_url(quote(key, ''), server_url)
         expires = "%s" % int(time() + expires)

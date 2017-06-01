@@ -25,7 +25,7 @@ region: beijing #  不存在时默认为beijing
 conf_dir = "conf"
 oss_account = RAMAccount(conf_dir=conf_dir, conf_name="oss.conf")
 bucket_man = OSSBucket(ram_account=oss_account, conf_dir=conf_dir, conf_name="oss.conf")
-print bucket_man.sing_file_url("zh_t045/readme.txt")
+print bucket_man.sign_file_url("zh_t045/readme.txt")
 
 """
 head oss文件
