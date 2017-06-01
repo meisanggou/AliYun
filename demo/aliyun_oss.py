@@ -38,11 +38,11 @@ print(resp.headers)
 """
 InitiateMultipartUpload
 """
-resp = bucket_man.init_mul_upload("zh_t045/C16121640570-SR16043-WES_S1_L001_R1_001.fastq.gz")
-assert resp["status_code"] == 200
-# print(resp["data"])
-upload_id = resp["data"]["upload_id"]
-key = resp["data"]["key"]
+# resp = bucket_man.init_mul_upload("zh_t045/C16121640570-SR16043-WES_S1_L001_R1_001.fastq.gz")
+# assert resp["status_code"] == 200
+# # print(resp["data"])
+# upload_id = resp["data"]["upload_id"]
+# key = resp["data"]["key"]
 
 """
 UploadPartCopy
@@ -57,5 +57,12 @@ Get Bucket (List Object)
 """
 
 resp = bucket_man.list_object(max_keys=100, prefix="admin/MJYLWXZ/", delimiter="/")
-assert resp["status_code"] == 200
-print resp["data"]["keys"]
+assert resp.status_code == 200
+print resp.data["keys"]
+
+"""
+List All Object
+"""
+resp = bucket_man.list_all_object(prefix="admin")
+assert resp.status_code == 200
+print resp.data["keys"]

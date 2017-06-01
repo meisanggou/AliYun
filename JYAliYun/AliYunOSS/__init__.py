@@ -158,3 +158,17 @@ class OSSBucket(ObjectManager):
             next_marker = res_ele.find("NextMarker").text
             r_d.data.update(next_marker=next_marker)
         return r_d
+
+    def list_all_object(self, prefix=None):
+        object_list = []
+        next_marker = None
+        while True:
+            r_d = self.list_object(prefix=prefix, marker=next_marker, max_keys=999)
+            if r_d.status_code / 100 != 2:
+                return r_d
+            object_list.extend(r_d.data["keys"])
+            if "next_marker" not in r_d.data:
+                r_d.data["keys"] = object_list
+                return r_d
+            next_marker = r_d.data["next_marker"]
+        return None
