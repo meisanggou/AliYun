@@ -16,7 +16,7 @@ if sys.version_info <= (2, 7):
     sys.exit(1)
 
 name = "JYAliYun"
-version = "0.1.11"
+version = "0.1.12"
 url = "https://github.com/meisanggou/AliYun"
 license = "MIT"
 author = "meisanggou"
@@ -30,7 +30,7 @@ setup(name=name,
       author=author,
       author_email="zhouheng@gene.ac",
       url=url,
-      packages=["JYAliYun", "JYAliYun/AliYunMNS", "JYAliYun/Tools"],
+      packages=["JYAliYun", "JYAliYun/AliYunMNS", "JYAliYun/Tools", "JYAliYun/AliYunOSS"],
       license=license,
       description=short_description,
       long_description=long_description,
