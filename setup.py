@@ -23,7 +23,7 @@ author = "meisanggou"
 short_description = "Aliyun Service Library"
 long_description = """JYAliYun provides interfaces to AliYun Service."""
 keywords = "JYAliYun"
-install_requires = ["requests >= 2.10.0", "lxml >= 3.7.3"]
+install_requires = ["requests", "lxml >= 3.7.3"]
 
 setup(name=name,
       version=version,
