@@ -17,3 +17,6 @@ print(r_resp.text)
 
 r_resp = user_man.delete_user("api_test")
 print(r_resp.text)
+
+r_resp = user_man.list_users()
+print(r_resp.text)

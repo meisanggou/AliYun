@@ -12,6 +12,14 @@ class RAMUserManager(ObjectManager):
     PRODUCT = "RAM"
     address = "https://ram.aliyuncs.com"
 
+    def list_users(self):
+        action = "ListUsers"
+        http_method = "GET"
+        custom_params = dict(Action=action)
+        params = get_params(self.access_key_id, self.access_key_secret, http_method, custom_params)
+        resp = jy_requests.request(http_method, self.address, params=params)
+        return resp
+
     def get_user(self, user_name):
         action = "GetUser"
         http_method = "GET"
