@@ -6,9 +6,11 @@ import ConfigParser
 import hmac
 import hashlib
 import base64
+import random
+from urllib import quote
 from datetime import datetime
 import xml.dom.minidom
-from JYAliYun import GMT_FORMAT
+from JYAliYun import UTC_FORMAT, GMT_FORMAT
 
 __author__ = 'ZhouHeng'
 
@@ -150,6 +152,48 @@ def ali_signature(access_key_secret, request_method, content_md5, content_type, 
     h = hmac.new(access_key_secret, msg, hashlib.sha1)
     signature = base64.b64encode(h.digest())
     return signature
+
+
+def percent_encode(s):
+    res = quote(s, '')
+    res = res.replace("+", "%20")
+    res = res.replace("*", "%2A")
+    res = res.replace("%7E", "~")
+    return res
+
+
+def encode_param(params):
+    param_str_list = []
+    for item in sorted(params.keys()):
+        s = percent_encode(item) + "=" + percent_encode(params[item])
+        param_str_list.append(s)
+    param_str = "&".join(param_str_list)
+    return param_str
+
+
+def _sign(http_method, params, access_secret):
+    param_str = encode_param(params)
+    string_sign = http_method + "&%2F&" + percent_encode(param_str)
+    h = hmac.new(access_secret + "&", string_sign, hashlib.sha1)
+    signature = base64.b64encode(h.digest())
+    return signature
+
+
+def get_params(access_key, access_secret, http_method, custom_params, **kwargs):
+    sign_nonce = "%s" % random.randint(100000, 999999)
+    time_stamp = datetime.utcnow().strftime(UTC_FORMAT)
+    print(time_stamp)
+    return_format = "JSON"
+    version = kwargs.get("version", "2015-05-01")
+    sign_method = kwargs.get("sign_method", "HMAC-SHA1")
+    sign_version = kwargs.get("sign_version", "1.0")
+    common_param = dict(Format=return_format, Version=version, AccessKeyId=access_key,
+                        SignatureMethod=sign_method, SignatureVersion=sign_version,
+                        SignatureNonce=sign_nonce, Timestamp=time_stamp)
+    params = dict(custom_params)
+    params.update(common_param)
+    params["Signature"] = _sign(http_method, params, access_secret)
+    return params
 
 
 if __name__ == "__main__":

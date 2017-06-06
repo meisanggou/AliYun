@@ -7,6 +7,7 @@ AliYUN_DOMAIN_NAME = "aliyuncs.com"
 
 # 时间相关
 GMT_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
+UTC_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 # Content-Type相关
