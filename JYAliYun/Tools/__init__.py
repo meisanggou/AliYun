@@ -19,11 +19,15 @@ XMLNS = "http://www.gene.ac"
 
 class ConvertObject(object):
     encoding = "utf-8"
+    second_encoding = "gbk"
 
     @staticmethod
     def decode(s):
         if isinstance(s, str):
-            return s.decode(ConvertObject.encoding)
+            try:
+                return s.decode(ConvertObject.encoding)
+            except UnicodeError:
+                return s.decode(ConvertObject.second_encoding, "replace")
         return s
 
     @staticmethod
