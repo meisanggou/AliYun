@@ -204,6 +204,7 @@ def get_environ(key):
     """
         ADD IN 0.1.14
     """
+    key = unicode(key).upper()
     full_key = "%s_%s" % (P_NAME, key)
     v = os.environ.get(full_key)
     if v is not None:
