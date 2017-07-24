@@ -23,6 +23,7 @@ class MNSTopicsManager(ObjectManager):
 
     def publish_message(self, message_body, message_tag=None, message_attributes=None):
         self.info_log(["PUBLISH MESSAGE [", message_tag, "]", message_body])
+        message_body += "\n[%s]" % self.env
         message_body = base64.b64encode(ConvertObject.encode(message_body))
         data = {"MessageBody": message_body}
         if message_tag is not None:
