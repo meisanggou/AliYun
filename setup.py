@@ -16,7 +16,7 @@ if sys.version_info <= (2, 7):
     sys.exit(1)
 
 name = "JYAliYun"
-version = "0.1.13"
+version = "0.1.14"
 url = "https://github.com/meisanggou/AliYun"
 license = "MIT"
 author = "meisanggou"

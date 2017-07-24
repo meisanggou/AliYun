@@ -10,7 +10,7 @@ import random
 from urllib import quote
 from datetime import datetime
 import xml.dom.minidom
-from JYAliYun import UTC_FORMAT, GMT_FORMAT
+from JYAliYun import UTC_FORMAT, GMT_FORMAT, P_NAME, LONG_P_NAME
 
 __author__ = 'ZhouHeng'
 
@@ -199,6 +199,17 @@ def get_params(access_key, access_secret, http_method, custom_params, **kwargs):
     params["Signature"] = _sign(http_method, params, access_secret)
     return params
 
+
+def get_environ(key):
+    """
+        ADD IN 0.1.14
+    """
+    full_key = "%s_%s" % (P_NAME, key)
+    v = os.environ.get(full_key)
+    if v is not None:
+        return v
+    long_full_key = "%s_%s" % (LONG_P_NAME, key)
+    return os.environ.get(long_full_key)
 
 if __name__ == "__main__":
     config_man = ConfigManager(conf_dir="/data/Web2/conf", conf_name="mns.conf", section="Account")

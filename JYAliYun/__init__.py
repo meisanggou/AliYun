@@ -3,6 +3,9 @@
 
 __author__ = 'ZhouHeng'
 
+P_NAME = "JY_ALY"
+LONG_P_NAME = "JY_ALIYUN"
+
 AliYUN_DOMAIN_NAME = "aliyuncs.com"
 
 # 时间相关
