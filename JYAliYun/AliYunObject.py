@@ -4,7 +4,7 @@
 import os
 import logging
 from logging.handlers import TimedRotatingFileHandler
-from JYAliYun import DATETIME_FORMAT, LOG_MSG_FORMAT, DEFAULT_LOGGER_NAME
+from JYAliYun import DATETIME_FORMAT, LOG_MSG_FORMAT, DEFAULT_LOGGER_NAME, HOSTNAME
 from JYAliYun.Tools import ConfigManager, ConvertObject, ali_headers, get_environ
 from JYAliYun.AliYunAccount import RAMAccount
 
@@ -45,11 +45,12 @@ class ObjectManager(object):
 
         self.env = self.cfg.get("env", "")
         current_env = get_environ("ENV")
-        if current_env is not None:
-            if self.env == "":
-                self.env = current_env
-            else:
-                self.env = "%s_%s" % (current_env, self.env)
+        if current_env is None:
+            current_env = HOSTNAME
+        if self.env == "":
+            self.env = current_env
+        else:
+            self.env = "%s_%s" % (current_env, self.env)
         self.logger_name = DEFAULT_LOGGER_NAME
         if "logger_name" in kwargs:
             self.logger_name = kwargs["logger_name"]
