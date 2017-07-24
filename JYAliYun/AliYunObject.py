@@ -44,10 +44,12 @@ class ObjectManager(object):
             self.ram_account.assign_account_info(self)
 
         self.env = self.cfg.get("env", "")
-        if self.env == "":
-            current_env = get_environ("ENV")
-            if current_env is not None:
+        current_env = get_environ("ENV")
+        if current_env is not None:
+            if self.env == "":
                 self.env = current_env
+            else:
+                self.env = "%s_%s" % (current_env, self.env)
         self.logger_name = DEFAULT_LOGGER_NAME
         if "logger_name" in kwargs:
             self.logger_name = kwargs["logger_name"]
