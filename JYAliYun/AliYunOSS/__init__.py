@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # coding: utf-8
 
+import os
 from time import time
 from lxml import etree
 from urllib import quote
@@ -49,6 +50,10 @@ class OSSBucket(ObjectManager):
             self.bucket_name = self.cfg.get('bucket')
         else:
             self.bucket_name = kwargs["bucket_name"]
+        if self.bucket_name.lower() == "local":
+            self.is_local = True
+        else:
+            self.is_local = False
         self.region = self.cfg.get("region", "beijing")
         self.protocol = self.cfg.get("protocol", "http")
         if self.is_internal is True:
@@ -96,6 +101,13 @@ class OSSBucket(ObjectManager):
         return sign_url
 
     def head_object(self, object_key):
+        if self.is_local is True:
+            resp = jy_requests.JYResponse()
+            if os.path.exists(object_key) is False:
+                resp.status_code = 404
+                return resp
+            resp.headers["Content-Length"] = os.path.getsize(object_key)
+            return resp
         oss_object = OssObject(self.bucket_name, object_key)
         url = self.join_url(oss_object.resource)
         headers = self.ali_headers("HEAD", oss_object.full_resource)
@@ -172,3 +184,10 @@ class OSSBucket(ObjectManager):
                 return r_d
             next_marker = r_d.data["next_marker"]
         return None
+
+
+if __name__ == "__main__":
+    from JYAliYun.AliYunAccount import RAMAccount
+    oss_account = RAMAccount(conf_path="/data/Web2/conf/oss.conf")
+    s = OSSBucket(ram_account=oss_account, conf_path="/data/Web2/conf/oss.conf")
+    print s.head_object("/data/Web2/conf/oss.conf")
