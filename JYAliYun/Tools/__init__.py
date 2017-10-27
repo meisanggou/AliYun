@@ -28,7 +28,11 @@ class ConvertObject(object):
                 return s.decode(ConvertObject.encoding)
             except UnicodeError:
                 return s.decode(ConvertObject.second_encoding, "replace")
-        return s
+        if isinstance(s, (int, long)):
+            return "%s" % s
+        if isinstance(s, unicode):
+            return s
+        return unicode(s)
 
     @staticmethod
     def encode(s):

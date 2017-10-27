@@ -22,6 +22,8 @@ class JYResponse(object):
 
 def request(method, url, **kwargs):
     no_exception = kwargs.pop("no_exception", False)
+    if "timeout" not in kwargs:
+        kwargs["timeout"] = 5
     r_d = JYResponse()
     if no_exception is True:
         try:
@@ -30,6 +32,7 @@ def request(method, url, **kwargs):
             return r_d
         except requests.RequestException as e:
             r_d.error = e
+            r_d.status_code = -1
             return r_d
     resp = requests.request(method, url, **kwargs)
     r_d.update(resp)
