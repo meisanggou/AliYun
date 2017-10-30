@@ -92,6 +92,8 @@ class OSSBucket(ObjectManager):
         return url
 
     def sign_file_url(self, key, method="GET", expires=60, server_url=None):
+        if self.is_local is True:
+            return None
         key = OSSBucket.format_key(key)
         sign_url = self.join_url(quote(key, ''), server_url)
         expires = "%s" % int(time() + expires)
