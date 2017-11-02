@@ -30,9 +30,10 @@ print bucket_man.sign_file_url("zh_t045/readme.txt")
 """
 head oss文件
 """
-head_object = "admin/SR16043_L001/C16121640570-YH112-SR16043-WES_S1_L001_R1_001.fastq.gz"
+head_object = "qi0ya1we5/OSA/admin%2Fdengchenxu%2FJNAN_WES_test_20170224%2F0000-0000-0197%2F000000000197-zy_R1.fq.gz"
 resp = bucket_man.head_object(head_object)
 print(resp.status_code)
+print(resp.text)
 print(resp.headers)
 
 """

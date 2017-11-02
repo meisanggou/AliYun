@@ -86,16 +86,16 @@ class OSSBucket(ObjectManager):
             url += server_url
         else:
             url += self.server_url
-        if not oss_object.startswith("/"):
-            url += "/"
-        url += oss_object
+        if oss_object.startswith("/"):
+            oss_object = oss_object[1:]
+        url += "/" + quote(oss_object, '')
         return url
 
     def sign_file_url(self, key, method="GET", expires=60, server_url=None):
         if self.is_local is True:
             return None
         key = OSSBucket.format_key(key)
-        sign_url = self.join_url(quote(key, ''), server_url)
+        sign_url = self.join_url(key, server_url)
         expires = "%s" % int(time() + expires)
         resource_string = self.get_resource(self.bucket_name, key)
         signature = ali_signature(self.access_key_secret, method, "", "", expires, "", resource_string)
