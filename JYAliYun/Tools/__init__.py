@@ -190,7 +190,6 @@ def _sign(http_method, params, access_secret):
 def get_params(access_key, access_secret, http_method, custom_params, **kwargs):
     sign_nonce = "%s" % random.randint(100000, 999999)
     time_stamp = datetime.utcnow().strftime(UTC_FORMAT)
-    print(time_stamp)
     return_format = "JSON"
     version = kwargs.get("version", "2015-05-01")
     sign_method = kwargs.get("sign_method", "HMAC-SHA1")
