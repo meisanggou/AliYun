@@ -75,10 +75,22 @@ class RAMUserManager(ObjectManager):
         resp = jy_requests.request(http_method, self.address, params=params)
         return resp
 
-    def attach_policy_to_user(self, user_name, policy_name):
+    def attach_policy_to_user(self, user_name, policy_name, policy_type=None):
+        """
+
+        :param user_name:
+        :param policy_name:
+        :param policy_type: Custom System
+        :return:
+        """
         action = "AttachPolicyToUser"
         http_method = "GET"
-        custom_params = dict(Action=action, UserName=user_name, PolicyName=policy_name, PolicyType="Custom")
+        if policy_type is None:
+            if policy_name.find("_") >= 0:
+                policy_type = "Custom"
+            else:
+                policy_type = "System"
+        custom_params = dict(Action=action, UserName=user_name, PolicyName=policy_name, PolicyType=policy_type)
         params = get_params(self.access_key_id, self.access_key_secret, http_method, custom_params)
         resp = jy_requests.request(http_method, self.address, params=params)
         return resp
@@ -118,22 +130,24 @@ if __name__ == "__main__":
     account = RAMAccount(conf_path="/data/Web2/conf/oss.conf")
     ram_man = RAMUserManager(ram_account=account)
     # list_r = ram_man.list_users()
-    p_dir = "/mnt/data/ali_policy"
-    policy_docs = os.listdir(p_dir)
-    all_policies = []
-    for doc in policy_docs:
-        doc_path = os.path.join(p_dir, doc)
-        with open(doc_path) as rd:
-            p_name = doc[:-7]
-            ram_man.delete_policy(p_name)
-            r = ram_man.create_policy(p_name, rd.read())
-            all_policies.append(p_name)
+    # p_dir = "/mnt/data/ali_policy"
+    # policy_docs = os.listdir(p_dir)
+    # all_policies = []
+    # for doc in policy_docs:
+    #     doc_path = os.path.join(p_dir, doc)
+    #     with open(doc_path) as rd:
+    #         p_name = doc[:-7]
+    #         ram_man.delete_policy(p_name)
+    #         r = ram_man.create_policy(p_name, rd.read())
+    #         all_policies.append(p_name)
     user_name = "be_developer"
+    reps = ram_man.attach_policy_to_user(user_name, "AliyunOTSFullAccess")
+    print(reps.text)
     # ram_man.delete_user_force(user_name)
     # cur = ram_man.create_user("be_developer", display_name="Back End Developer", mobile_phone="15290539544",
     #                           comments="后端开发人员专属的子帐号", email="zhouheng@genen.ac")
     # print(cur.text)
-    ram_man.detach_all_policy_to_user(user_name)
-    for item in all_policies:
-        ram_man.attach_policy_to_user(user_name, item)
+    # ram_man.detach_all_policy_to_user(user_name)
+    # for item in all_policies:
+    #     ram_man.attach_policy_to_user(user_name, item)
     # ram_man.create_access_key(user_name).text
