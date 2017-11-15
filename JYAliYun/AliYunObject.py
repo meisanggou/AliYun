@@ -22,7 +22,7 @@ class ObjectManager(object):
             if isinstance(kwargs["cfg"], ConfigManager):
                 self.cfg = kwargs["cfg"]
         else:
-            self.cfg = ConfigManager(**kwargs)
+            self.cfg = ConfigManager(product=self.PRODUCT, **kwargs)
         self.server_url = None
         self.access_key_id = ""
         self.access_key_secret = ""

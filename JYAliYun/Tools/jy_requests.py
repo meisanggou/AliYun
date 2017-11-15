@@ -15,7 +15,7 @@ class JYResponse(object):
         self.data = None
 
     def update(self, resp):
-        if resp.headers.get("Content-Type").index("application/json") >= 0:
+        if resp.headers.get("Content-Type", "").find("application/json") >= 0:
             self.data = resp.json()
         self.status_code = resp.status_code
         self.text = resp.text

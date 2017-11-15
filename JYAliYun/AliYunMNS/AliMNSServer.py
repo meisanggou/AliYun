@@ -15,6 +15,7 @@ class MNSServerManager(ObjectManager):
     account_id: 1530531001163833
     region: beijing
     """
+    PRODUCT = "MNS"
 
     def __init__(self, *args, **kwargs):
         kwargs.update(default_section="MNS", default_conf_name="mns.conf", disabled_log=True)

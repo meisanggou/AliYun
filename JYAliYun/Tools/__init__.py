@@ -79,6 +79,12 @@ class ConfigManager(object):
                     self.conf_path = os.path.join(conf_dir, conf_name)
                 elif default_conf_name is not None:
                     self.conf_path = os.path.join(conf_dir, default_conf_name)
+            else:
+                if "product" in kwargs:
+                    env_conf_path = get_environ("%s_conf_path" % kwargs["product"])
+                else:
+                    env_conf_path = get_environ("conf_path")
+                self.conf_path = env_conf_path
         if self.conf_path is None or self.section is None:
             self.ready = False
         else:
@@ -213,8 +219,11 @@ def get_environ(key):
     if v is not None:
         return v
     long_full_key = "%s_%s" % (LONG_P_NAME, key)
-    return os.environ.get(long_full_key)
+    lv = os.environ.get(long_full_key)
+    if lv is not None:
+        return lv
+    return os.environ.get(key)
 
 if __name__ == "__main__":
-    config_man = ConfigManager(conf_dir="/data/Web2/conf", conf_name="mns.conf", section="Account")
+    config_man = ConfigManager(section="Account", product="MNS")
     print config_man.get("access_key_id")

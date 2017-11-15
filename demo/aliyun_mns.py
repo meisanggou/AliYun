@@ -26,7 +26,7 @@ region: beijing  #  所属区域
 conf_dir = "conf"
 conf_path = os.environ.get("MNS_CONF_PATH", os.path.join(conf_dir, "mns.conf"))
 mns_account = RAMAccount(conf_path=conf_path)
-mns_server = MNSServerManager(ram_account=mns_account, conf_path=conf_path)
+mns_server = MNSServerManager(ram_account=mns_account)
 
 topic_name = "JYWaring"
 mns_topic = mns_server.get_topic(topic_name)
