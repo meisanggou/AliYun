@@ -141,7 +141,7 @@ if __name__ == "__main__":
     #         r = ram_man.create_policy(p_name, rd.read())
     #         all_policies.append(p_name)
     user_name = "be_developer"
-    reps = ram_man.attach_policy_to_user(user_name, "AliyunOTSFullAccess")
+    reps = ram_man.attach_policy_to_user(user_name, "AliyunBatchComputeFullAccess")
     print(reps.text)
     # ram_man.delete_user_force(user_name)
     # cur = ram_man.create_user("be_developer", display_name="Back End Developer", mobile_phone="15290539544",
