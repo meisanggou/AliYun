@@ -46,9 +46,10 @@ class OSSBucket(ObjectManager):
         if "default_section" not in kwargs:
             kwargs["default_section"] = "OSS"
         super(OSSBucket, self).__init__(*args, **kwargs)
+
         if self.cfg.get("bucket") is not None:
             self.bucket_name = self.cfg.get('bucket')
-        else:
+        if "bucket_name" in kwargs:
             self.bucket_name = kwargs["bucket_name"]
         if self.bucket_name.lower() == "local":
             self.is_local = True
