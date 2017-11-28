@@ -190,6 +190,6 @@ class OSSBucket(ObjectManager):
 
 if __name__ == "__main__":
     from JYAliYun.AliYunAccount import RAMAccount
-    oss_account = RAMAccount(conf_path="/data/Web2/conf/oss.conf")
-    s = OSSBucket(ram_account=oss_account, conf_path="/data/Web2/conf/oss.conf")
+    # oss_account = RAMAccount(conf_path="/data/Web2/conf/oss.conf")
+    s = OSSBucket(conf_path="/data/Web2/conf/oss.conf")
     print s.head_object("/data/Web2/conf/oss.conf")

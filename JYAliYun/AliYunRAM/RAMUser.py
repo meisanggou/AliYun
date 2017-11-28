@@ -28,6 +28,14 @@ class RAMUserManager(ObjectManager):
         resp = jy_requests.request(http_method, self.address, params=params)
         return resp
 
+    def list_access_keys(self, user_name):
+        action = "ListAccessKeys"
+        http_method = "GET"
+        custom_params = dict(Action=action, UserName=user_name)
+        params = get_params(self.access_key_id, self.access_key_secret, http_method, custom_params)
+        resp = jy_requests.request(http_method, self.address, params=params)
+        return resp
+
     def create_user(self, user_name, **kwargs):
         action = "CreateUser"
         http_method = "GET"
@@ -140,9 +148,10 @@ if __name__ == "__main__":
     #         ram_man.delete_policy(p_name)
     #         r = ram_man.create_policy(p_name, rd.read())
     #         all_policies.append(p_name)
-    user_name = "be_developer"
-    reps = ram_man.attach_policy_to_user(user_name, "AliyunBatchComputeFullAccess")
+    user_name = "vipingjo"
+    reps = ram_man.get_user(user_name)
     print(reps.text)
+    print(ram_man.list_access_keys(user_name).data)
     # ram_man.delete_user_force(user_name)
     # cur = ram_man.create_user("be_developer", display_name="Back End Developer", mobile_phone="15290539544",
     #                           comments="后端开发人员专属的子帐号", email="zhouheng@genen.ac")

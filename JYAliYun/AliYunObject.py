@@ -33,6 +33,8 @@ class ObjectManager(object):
             ram_account = kwargs["ram_account"]
             assert isinstance(ram_account, RAMAccount)
             self.ram_account = ram_account
+        else:
+            self.ram_account = RAMAccount(conf_path=self.cfg.conf_path)
         if "disabled_log" in kwargs:
             self.disabled_log = kwargs["disabled_log"]
             assert isinstance(self.disabled_log, bool)
