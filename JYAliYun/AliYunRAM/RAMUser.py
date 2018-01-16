@@ -57,6 +57,16 @@ class RAMUserManager(ObjectManager):
         resp = jy_requests.request(http_method, self.address, params=params)
         return resp
 
+    def create_login_profile(self, user_name, password, password_reset_required=False):
+        action = "CreateLoginProfile"
+        http_method = "GET"
+        custom_params = dict(Action=action, UserName=user_name, Password=password)
+        if password_reset_required is not False:
+            custom_params["PasswordResetRequired"] = password_reset_required
+        params = get_params(self.access_key_id, self.access_key_secret, http_method, custom_params)
+        resp = jy_requests.request(http_method, self.address, params=params)
+        return resp
+
     def create_access_key(self, user_name):
         action = "CreateAccessKey"
         http_method = "GET"
@@ -65,9 +75,12 @@ class RAMUserManager(ObjectManager):
         resp = jy_requests.request(http_method, self.address, params=params)
         return resp
 
-    def create_policy(self, policy_name, policy_document, description=None):
+    def create_policy(self, policy_name, policy_document=None, policy_document_path=None, description=None):
         action = "CreatePolicy"
         http_method = "GET"
+        if policy_document_path is not None:
+            with open(policy_document_path, "r") as rp:
+                policy_document = rp.read()
         custom_params = dict(Action=action, PolicyName=policy_name, PolicyDocument=policy_document)
         if description is not None:
             custom_params["Description"] = description
@@ -148,15 +161,20 @@ if __name__ == "__main__":
     #         ram_man.delete_policy(p_name)
     #         r = ram_man.create_policy(p_name, rd.read())
     #         all_policies.append(p_name)
-    user_name = "vipingjo"
+    user_name = "oss_beijing"
     reps = ram_man.get_user(user_name)
-    print(reps.text)
-    print(ram_man.list_access_keys(user_name).data)
-    # ram_man.delete_user_force(user_name)
-    # cur = ram_man.create_user("be_developer", display_name="Back End Developer", mobile_phone="15290539544",
-    #                           comments="后端开发人员专属的子帐号", email="zhouheng@genen.ac")
-    # print(cur.text)
+    # print(reps.text)
+    # print(ram_man.list_access_keys(user_name).data)
+    # # ram_man.delete_user_force(user_name)
+    # cur = ram_man.create_user(user_name, display_name="北京生信", mobile_phone="15290539544",
+    #                           comments="该账户专供北京生信成员存储软件使用，要求创建者方双桑，同意创建者卜徳超，创建者周恒",
+    #                           email="zhouheng@genen.ac")
+    # # print(cur.text)
     # ram_man.detach_all_policy_to_user(user_name)
+    # ram_man.delete_policy("oss_write_jy_beijing")
+    # ram_man.create_policy("oss_write_jy_beijing", policy_document_path="/mnt/data/ali_policy/oss_write_jy_beijing.policy")
+    # all_policies = ["oss_list_bucket", "oss_write_jy_beijing"]
     # for item in all_policies:
     #     ram_man.attach_policy_to_user(user_name, item)
-    # ram_man.create_access_key(user_name).text
+    # print(ram_man.create_access_key(user_name).text)
+    ram_man.create_login_profile(user_name, "@gene.ac")
