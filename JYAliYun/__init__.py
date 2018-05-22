@@ -24,4 +24,4 @@ DEFAULT_LOGGER_NAME = "JY_ALIYUN_SDK"
 LOG_MSG_FORMAT = "%(asctime)s %(levelname)s %(message)s"
 
 # 环境相关
-HOSTNAME = os.environ.get("HOSTNAME", "")
+HOSTNAME = os.environ.get("HOSTNAME", os.environ.get("USERDOMAIN", ""))
