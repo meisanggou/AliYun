@@ -16,7 +16,7 @@ if sys.version_info <= (2, 7):
     sys.exit(1)
 
 name = "JYAliYun"
-version = "0.2.6"
+version = "0.2.7"
 url = "https://github.com/meisanggou/AliYun"
 license = "MIT"
 author = "meisanggou"
@@ -39,6 +39,6 @@ setup(name=name,
 
       entry_points = '''
             [console_scripts]
-            oss_head=JYAliYun.AliYunOSS.cli.oss_head
+            oss-head=JYAliYun.AliYunOSS.cli:oss_head
       '''
       )
