@@ -16,21 +16,22 @@ if sys.version_info <= (2, 7):
     sys.exit(1)
 
 name = "JYAliYun"
-version = "0.3.1"
+version = "0.3.2"
 url = "https://github.com/meisanggou/AliYun"
 license = "MIT"
 author = "meisanggou"
 short_description = "Aliyun Service Library"
 long_description = """JYAliYun provides interfaces to AliYun Service."""
 keywords = "JYAliYun"
-install_requires = ["requests", "lxml"]
+install_requires = ["requests", "lxml", "six"]
 
 setup(name=name,
       version=version,
       author=author,
       author_email="zhouheng@gene.ac",
       url=url,
-      packages=["JYAliYun", "JYAliYun/AliYunMNS", "JYAliYun/Tools", "JYAliYun/AliYunOSS", "JYAliYun/AliYunRAM"],
+      packages=["JYAliYun", "JYAliYun/util", "JYAliYun/AliYunMNS", "JYAliYun/Tools", "JYAliYun/AliYunOSS",
+                "JYAliYun/AliYunRAM"],
       license=license,
       description=short_description,
       long_description=long_description,
@@ -40,5 +41,7 @@ setup(name=name,
       entry_points='''[console_scripts]
             oss-head=JYAliYun.AliYunOSS.cli:oss_head
             head-oss=JYAliYun.AliYunOSS.cli:oss_head
+            publish-message=JYAliYunMNS.cli:publish_message
+            mns-pm=JYAliYunMNS.cli:publish_message
       '''
       )
