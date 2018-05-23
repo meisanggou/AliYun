@@ -16,6 +16,7 @@ def receive_conf_path(conf_path):
         conf_path = os.environ.get(env_oss_conf)
         if conf_path is None:
             sys.stderr.write("Please use -c or --conf-path set oss configure path")
+            sys.exit(1)
     return conf_path
 
 
@@ -26,6 +27,8 @@ def oss_head():
     arg_man.add_argument("-o", "-O", "--object", dest="object", help="oss object path", action="append", metavar="",
                          default=[])
     arg_man.add_argument("objects", metavar="object", nargs="*", help="oss object path")
+    if len(sys.argv) <= 1:
+        sys.argv.append("-h")
     args = arg_man.parse_args()
     conf_path = receive_conf_path(args.conf_path)
     o_objects = args.object
@@ -44,6 +47,7 @@ def oss_head():
             continue
         for k, v in resp.headers.items():
             print("%s\t%s" % (k, v))
+    sys.exit(exit_code)
 
 
 if __name__ == "__main__":
