@@ -53,5 +53,39 @@ def oss_head():
     sys.exit(exit_code)
 
 
+def list_object():
+    arg_man = argparse.ArgumentParser()
+    arg_man.add_argument("-c", "--conf-path", dest="conf_path", help="oss configure file path", metavar="")
+    arg_man.add_argument("-b", "--bucket-name", dest="bucket_name", help="oss bucket name", metavar="")
+    arg_man.add_argument("-d", "--oss_dir", dest="oss_dir", help="oss dir", action="append", metavar="",
+                         default=[])
+    arg_man.add_argument("-r", "--region", dest="region", help="bucket region", metavar="")
+    arg_man.add_argument("oss_dirs", metavar="oss_dirs", nargs="*", help="oss dir")
+    if len(sys.argv) <= 1:
+        sys.argv.append("-h")
+    args = arg_man.parse_args()
+    conf_path = receive_conf_path(args.conf_path)
+    oss_dirs = args.oss_dir
+    oss_dirs.extend(args.oss_dirs)
+    kwargs = dict(conf_path=conf_path)
+    if args.bucket_name is not None:
+        kwargs["bucket_name"] = args.bucket_name
+    if args.region is not None:
+        kwargs["region"] = args.region
+    bucket_man = OSSBucket(**kwargs)
+    exit_code = 0
+    for d_item in set(oss_dirs):
+        resp = bucket_man.list_all_object(d_item)
+        if resp.status_code != 200:
+            print("list fail! oss server return %s" % resp.status_code)
+            exit_code += 1
+            break
+        keys = resp.data["keys"]
+        for item in keys:
+            print(item["key"][len(d_item):])
+    sys.exit(exit_code)
+
+
 if __name__ == "__main__":
-    oss_head()
+    sys.argv.extend(["-b", "geneac", "-r", "beijing", "geneacdata/bson/"])
+    list_object()

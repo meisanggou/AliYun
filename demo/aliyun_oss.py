@@ -22,7 +22,7 @@ region: beijing #  不存在时默认为beijing
 """
 生成oss文件授权链接
 """
-conf_dir = "conf"
+conf_dir = "/data/Web2/conf"
 oss_account = RAMAccount(conf_dir=conf_dir, conf_name="oss.conf")
 bucket_man = OSSBucket(ram_account=oss_account, conf_dir=conf_dir, conf_name="oss.conf")
 print bucket_man.sign_file_url("zh_t045/readme.txt")

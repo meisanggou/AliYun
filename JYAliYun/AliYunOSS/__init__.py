@@ -56,6 +56,8 @@ class OSSBucket(ObjectManager):
         else:
             self.is_local = False
         self.region = self.cfg.get("region", "beijing")
+        if "region" in kwargs:
+            self.region = kwargs["region"]
         self.protocol = self.cfg.get("protocol", "http")
         if self.is_internal is True:
             self.endpoint = "oss-cn-%s-internal.%s" % (self.region, AliYUN_DOMAIN_NAME)
