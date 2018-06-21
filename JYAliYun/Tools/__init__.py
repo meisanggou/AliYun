@@ -2,6 +2,7 @@
 # coding: utf-8
 
 import os
+import sys
 import ConfigParser
 import hmac
 import hashlib
@@ -127,6 +128,9 @@ class ConfigManager(object):
 
 def ali_headers(access_key_id, access_key_secret, request_method, content_md5, content_type, headers, resource,
                 **kwargs):
+    if access_key_id == "" or access_key_id is None:
+        sys.stderr.write("access key id not set \n")
+        return headers
     request_time = datetime.utcnow().strftime(GMT_FORMAT)
     x_headers = dict()
     product = kwargs.pop("product", "")

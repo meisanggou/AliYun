@@ -130,5 +130,5 @@ def get_objects():
     sys.exit(exit_code)
 
 if __name__ == "__main__":
-    sys.argv.extend(["-b", "geneac", "-r", "beijing", "-d", "geneacdata/bson/"])
+    sys.argv.extend(["-b", "jy-softs", "-r", "beijing", "-d", "softs/"])
     get_objects()
