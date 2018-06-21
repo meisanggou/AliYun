@@ -86,6 +86,45 @@ def list_object():
     sys.exit(exit_code)
 
 
+def get_objects():
+    arg_man = argparse.ArgumentParser()
+    arg_man.add_argument("-c", "--conf-path", dest="conf_path", help="oss configure file path", metavar="")
+    arg_man.add_argument("-b", "--bucket-name", dest="bucket_name", help="oss bucket name", metavar="")
+    arg_man.add_argument("-d", "--oss_dir", dest="oss_dir", help="oss dir", metavar="")
+    arg_man.add_argument("-r", "--region", dest="region", help="bucket region", metavar="")
+    arg_man.add_argument("-o", "--output", dest="output", metavar="", help="output dir", default=".")
+    if len(sys.argv) <= 1:
+        sys.argv.append("-h")
+    args = arg_man.parse_args()
+    conf_path = receive_conf_path(args.conf_path)
+    oss_dir = args.oss_dir
+    out_dir = args.output
+    kwargs = dict(conf_path=conf_path)
+    if args.bucket_name is not None:
+        kwargs["bucket_name"] = args.bucket_name
+    if args.region is not None:
+        kwargs["region"] = args.region
+    bucket_man = OSSBucket(**kwargs)
+    exit_code = 0
+    resp = bucket_man.list_all_object(oss_dir, delimiter="/")
+    if resp.status_code != 200:
+        print("list fail! oss server return %s" % resp.status_code)
+        sys.exit(1)
+    keys = resp.data["keys"]
+    for item in keys:
+        key = item["key"]
+        if key.endswith("/") is True:
+            continue
+        save_name = key[len(oss_dir):]
+        save_path = os.path.join(out_dir, save_name)
+        print("download %s to %s" % (save_name, save_path))
+        response = bucket_man.get_object(key, save_path)
+        if response.status_code != 200:
+            print(response.status_code)
+            sys.exit(1)
+
+    sys.exit(exit_code)
+
 if __name__ == "__main__":
-    sys.argv.extend(["-b", "geneac", "-r", "beijing", "geneacdata/bson/"])
-    list_object()
+    sys.argv.extend(["-b", "geneac", "-r", "beijing", "-d", "geneacdata/bson/"])
+    get_objects()

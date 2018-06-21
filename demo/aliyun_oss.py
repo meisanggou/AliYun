@@ -36,6 +36,13 @@ print(resp.status_code)
 print(resp.text)
 print(resp.headers)
 
+
+"""
+get oss object
+"""
+data = bucket_man.get_object("zh_t045/readme.txt", "readme.txt")
+print(data.status_code)
+
 """
 InitiateMultipartUpload
 """

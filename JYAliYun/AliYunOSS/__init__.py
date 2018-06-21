@@ -119,6 +119,25 @@ class OSSBucket(ObjectManager):
         response = jy_requests.head(url, headers=headers)
         return response
 
+    def get_object(self, object_key, save_path=None):
+        if self.is_local is True:
+            resp = jy_requests.JYResponse()
+            if os.path.exists(object_key) is False:
+                resp.status_code = 404
+                return resp
+            resp.headers["Content-Length"] = os.path.getsize(object_key)
+            return resp
+        oss_object = OssObject(self.bucket_name, object_key)
+        url = self.join_url(oss_object.resource)
+        headers = self.ali_headers("GET", oss_object.full_resource)
+        response = jy_requests.get(url, headers=headers)
+        if response.status_code == 200:
+            if save_path is not None:
+                with open(save_path, "wb") as ws:
+                    ws.write(response.content)
+            return response
+        return response
+
     def init_mul_upload(self, object_key):
         oss_object = OssObject(self.bucket_name, object_key, {"uploads": None})
         headers = self.ali_headers("POST", oss_object.full_resource)
@@ -176,11 +195,11 @@ class OSSBucket(ObjectManager):
             r_d.data.update(next_marker=next_marker)
         return r_d
 
-    def list_all_object(self, prefix=None):
+    def list_all_object(self, prefix=None, delimiter=None):
         object_list = []
         next_marker = None
         while True:
-            r_d = self.list_object(prefix=prefix, marker=next_marker, max_keys=999)
+            r_d = self.list_object(prefix=prefix, marker=next_marker, max_keys=999, delimiter=delimiter)
             if r_d.status_code / 100 != 2:
                 return r_d
             object_list.extend(r_d.data["keys"])

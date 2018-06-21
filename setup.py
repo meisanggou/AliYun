@@ -42,6 +42,7 @@ setup(name=name,
             oss-head=JYAliYun.AliYunOSS.cli:oss_head
             head-oss=JYAliYun.AliYunOSS.cli:oss_head
             oss-list=JYAliYun.AliYunOSS.cli:list_object
+            oss-get=JYAliYun.AliYunOSS.cli:get_objects
             list-oss=JYAliYun.AliYunOSS.cli:list_object
             publish-message=JYAliYun.AliYunMNS.cli:publish_message
             mns-pm=JYAliYun.AliYunMNS.cli:publish_message
