@@ -77,7 +77,7 @@ def list_object():
     for d_item in set(oss_dirs):
         resp = bucket_man.list_all_object(d_item)
         if resp.status_code != 200:
-            print("list fail! oss server return %s" % resp.status_code)
+            sys.stderr.write("list fail! oss server return %s\n" % resp.status_code)
             exit_code += 1
             break
         keys = resp.data["keys"]
@@ -93,6 +93,8 @@ def get_objects():
     arg_man.add_argument("-d", "--oss_dir", dest="oss_dir", help="oss dir", metavar="")
     arg_man.add_argument("-r", "--region", dest="region", help="bucket region", metavar="")
     arg_man.add_argument("-o", "--output", dest="output", metavar="", help="output dir", default=".")
+    arg_man.add_argument("-v", "--verbose", dest="verbose", help="print all message", action="store_true",
+                         default=False)
     if len(sys.argv) <= 1:
         sys.argv.append("-h")
     args = arg_man.parse_args()
@@ -108,7 +110,7 @@ def get_objects():
     exit_code = 0
     resp = bucket_man.list_all_object(oss_dir, delimiter="/")
     if resp.status_code != 200:
-        print("list fail! oss server return %s" % resp.status_code)
+        sys.stderr.write("list fail! oss server return %s\n" % resp.status_code)
         sys.exit(1)
     keys = resp.data["keys"]
     for item in keys:
@@ -117,11 +119,13 @@ def get_objects():
             continue
         save_name = key[len(oss_dir):]
         save_path = os.path.join(out_dir, save_name)
-        print("download %s to %s" % (save_name, save_path))
+        if args.verbose is True:
+            print("download %s to %s" % (save_name, save_path))
         response = bucket_man.get_object(key, save_path)
         if response.status_code != 200:
-            print(response.status_code)
+            sys.stderr.write(response.status_code)
             sys.exit(1)
+        print(save_path)
 
     sys.exit(exit_code)
 
