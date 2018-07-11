@@ -162,6 +162,7 @@ if __name__ == "__main__":
     from JYAliYun.AliYunAccount import RAMAccount
     account = RAMAccount(conf_path="/data/Web2/conf/oss.conf")
     ram_man = RAMUserManager(ram_account=account)
+    print(ram_man.access_key_id)
     # list_r = ram_man.list_users()
     # p_dir = "/mnt/data/ali_policy"
     # policy_docs = os.listdir(p_dir)
@@ -186,8 +187,12 @@ if __name__ == "__main__":
     # ram_man.delete_policy("oss_bucket_acl")
     # print(ram_man.create_policy_version("oss_list_bucket", policy_document_path="/mnt/data/ali_policy/oss_list_bucket.policy", as_default="true").text)
     # print(ram_man.detach_policy_to_user(user_name, "oss_list_bucket").text)
-    ram_man.create_policy("oss_write_jy_softs", policy_document_path="/mnt/data/ali_policy/oss_write_jy_softs.policy")
-    print(ram_man.attach_policy_to_user(user_name, "oss_write_jy_softs").text)
+    # ram_man.create_policy("oss_write_jy_softs", policy_document_path="/mnt/data/ali_policy/oss_write_jy_softs.policy")
+    # print(ram_man.attach_policy_to_user(user_name, "oss_write_jy_softs").text)
+    resp = ram_man.detach_policy_to_user("liulei", "liulei_policy")
+    ram_man.delete_policy("liulei_policy")
+    # resp = ram_man.attach_policy_to_user("be_developer", "oss_write_jy_softs")
+    print(resp.content)
     # all_policies = ["oss_bucket_acl"]
     # for item in all_policies:
     #     print(ram_man.attach_policy_to_user(user_name, item).text)

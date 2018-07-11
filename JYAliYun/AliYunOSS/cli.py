@@ -95,12 +95,14 @@ def get_objects():
     arg_man.add_argument("-o", "--output", dest="output", metavar="", help="output dir", default=".")
     arg_man.add_argument("-v", "--verbose", dest="verbose", help="print all message", action="store_true",
                          default=False)
+    arg_man.add_argument("object", help="objects to download, if not set, will download all", nargs="*")
     if len(sys.argv) <= 1:
         sys.argv.append("-h")
     args = arg_man.parse_args()
     conf_path = receive_conf_path(args.conf_path)
     oss_dir = args.oss_dir
-    out_dir = args.output
+    out_dir = os.path.abspath(args.output)
+    oss_object = args.object
     kwargs = dict(conf_path=conf_path)
     if args.bucket_name is not None:
         kwargs["bucket_name"] = args.bucket_name
@@ -108,27 +110,32 @@ def get_objects():
         kwargs["region"] = args.region
     bucket_man = OSSBucket(**kwargs)
     exit_code = 0
-    resp = bucket_man.list_all_object(oss_dir, delimiter="/")
-    if resp.status_code != 200:
-        sys.stderr.write("list fail! oss server return %s\n" % resp.status_code)
-        sys.exit(1)
-    keys = resp.data["keys"]
-    for item in keys:
-        key = item["key"]
-        if key.endswith("/") is True:
-            continue
-        save_name = key[len(oss_dir):]
-        save_path = os.path.join(out_dir, save_name)
-        if args.verbose is True:
-            print("download %s to %s" % (save_name, save_path))
-        response = bucket_man.get_object(key, save_path)
-        if response.status_code != 200:
-            sys.stderr.write(response.status_code)
-            sys.exit(1)
-        print(save_path)
+    if oss_dir is not None:
+        if len(oss_object) <= 0:
+            resp = bucket_man.list_all_object(oss_dir, delimiter="/")
+            if resp.status_code != 200:
+                sys.stderr.write("list fail! oss server return %s\n" % resp.status_code)
+                sys.exit(1)
+            keys = resp.data["keys"]
+        else:
+            oss_dir2 = oss_dir.strip("/")
+            keys = map(lambda x: dict(key=oss_dir2 + "/" + x), oss_object)
+        for item in keys:
+            key = item["key"]
+            if key.endswith("/") is True:
+                continue
+            save_name = key[len(oss_dir):]
+            save_path = os.path.join(out_dir, save_name)
+            if args.verbose is True:
+                print("download %s to %s" % (save_name, save_path))
+            response = bucket_man.get_object(key, save_path)
+            if response.status_code != 200:
+                sys.stderr.write(response.status_code)
+                sys.exit(1)
+            print(save_path)
 
     sys.exit(exit_code)
 
 if __name__ == "__main__":
-    sys.argv.extend(["-b", "jy-softs", "-r", "beijing", "-d", "softs/"])
+    sys.argv.extend(["-b", "geneac", "-r", "beijing", "-d", "dmsdata/back_table/", "health_medical_block.sql.backup"])
     get_objects()
