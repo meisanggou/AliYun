@@ -75,6 +75,14 @@ class RAMUserManager(ObjectManager):
         resp = jy_requests.request(http_method, self.address, params=params)
         return resp
 
+    def delete_access_key(self, user_name, access_key):
+        action = "DeleteAccessKey"
+        http_method = "GET"
+        custom_params = dict(Action=action, UserName=user_name, UserAccessKeyId=access_key)
+        params = get_params(self.access_key_id, self.access_key_secret, http_method, custom_params)
+        resp = jy_requests.request(http_method, self.address, params=params)
+        return resp
+
     def create_policy(self, policy_name, policy_document=None, policy_document_path=None, description=None):
         action = "CreatePolicy"
         http_method = "GET"
@@ -154,7 +162,11 @@ class RAMUserManager(ObjectManager):
 
     def delete_user_force(self, user_name):
         self.detach_all_policy_to_user(user_name)
-        self.delete_user(user_name)
+        resp = ram_man.list_access_keys(user_name)
+        for key in resp.data["AccessKeys"]["AccessKey"]:
+            self.delete_access_key(user_name, key["AccessKeyId"])
+        resp = self.delete_user(user_name)
+        return resp
 
 
 if __name__ == "__main__":
@@ -174,24 +186,28 @@ if __name__ == "__main__":
     #         ram_man.delete_policy(p_name)
     #         r = ram_man.create_policy(p_name, rd.read())
     #         all_policies.append(p_name)
-    user_name = "be_developer"
-    reps = ram_man.get_user(user_name)
+    user_name = "med_service"
+    # reps = ram_man.get_user(user_name)
     # print(reps.text)
     # print(ram_man.list_access_keys(user_name).data)
     # # ram_man.delete_user_force(user_name)
-    # cur = ram_man.create_user(user_name, display_name="北京生信", mobile_phone="15290539544",
-    #                           comments="该账户专供北京生信成员存储软件使用，要求创建者方双桑，同意创建者卜徳超，创建者周恒",
-    #                           email="zhouheng@genen.ac")
+    cur = ram_man.create_user(user_name, display_name="北京医学对外", mobile_phone="15290539544",
+                              comments="为北京医学部开此账户，该账户医学客户上传数据关联策略oss_admin_external。要求创建者陶娅玲，同意者卜徳超，创建者周恒",
+                              email="zhouheng@genen.ac")
     # # print(cur.text)
-    # ram_man.detach_all_policy_to_user(user_name)
-    # ram_man.delete_policy("oss_bucket_acl")
-    # print(ram_man.create_policy_version("oss_list_bucket", policy_document_path="/mnt/data/ali_policy/oss_list_bucket.policy", as_default="true").text)
+    ram_man.detach_all_policy_to_user(user_name)
+
+    # resp = ram_man.delete_user_force(user_name)
+    # resp = ram_man.delete_user(user_name)
+    # print(resp.content)
+    ram_man.delete_policy("oss_admin_external")
+    # print(ram_man.create_policy_version("oss_admin_external", policy_document_path="/mnt/data/ali_policy/oss_admin_external.policy", as_default="true").text)
     # print(ram_man.detach_policy_to_user(user_name, "oss_list_bucket").text)
-    # ram_man.create_policy("oss_write_jy_softs", policy_document_path="/mnt/data/ali_policy/oss_write_jy_softs.policy")
+    ram_man.create_policy("oss_admin_external", policy_document_path="/mnt/data/ali_policy/oss_admin_external.policy")
     # print(ram_man.attach_policy_to_user(user_name, "oss_write_jy_softs").text)
-    resp = ram_man.detach_policy_to_user("liulei", "liulei_policy")
-    ram_man.delete_policy("liulei_policy")
-    # resp = ram_man.attach_policy_to_user("be_developer", "oss_write_jy_softs")
+    # resp = ram_man.detach_policy_to_user("liulei", "liulei_policy")
+    # ram_man.delete_policy("liulei_policy")
+    resp = ram_man.attach_policy_to_user(user_name, "oss_admin_external")
     print(resp.content)
     # all_policies = ["oss_bucket_acl"]
     # for item in all_policies:
